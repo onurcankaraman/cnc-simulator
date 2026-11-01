@@ -1,0 +1,64 @@
+services:
+  cnc-simulator:
+    build: .
+    image: cnc-simulator:1.0
+    restart: unless-stopped
+    init: true
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    ports:
+      - "${BIND_IP:-127.0.0.1}:${S7_PORT:-102}:1102"
+      - "${BIND_IP:-127.0.0.1}:4840:4840"
+      - "${BIND_IP:-127.0.0.1}:8080:8080"
+    environment:
+      MQTT_PASSWORD_FILE: /run/secrets/mqtt-password
+      ALLOW_INSECURE_OPCUA: "${ALLOW_INSECURE_OPCUA:-false}"
+      ENABLE_ADMIN: "${ENABLE_ADMIN:-false}"
+      ADMIN_TOKEN_FILE: /run/secrets/admin-token
+      OPCUA_CERT: /run/secrets/server.der
+      OPCUA_KEY: /run/secrets/server-key.der
+      OPCUA_CLIENT_CERT: /run/secrets/client.der
+    volumes:
+      - ./data:/data
+      - ./config:/app/config:ro
+      - ./secrets/mqtt-password:/run/secrets/mqtt-password:ro
+      - ./secrets/admin-token:/run/secrets/admin-token:ro
+      - ./secrets/server.der:/run/secrets/server.der:ro
+      - ./secrets/server-key.der:/run/secrets/server-key.der:ro
+      - ./secrets/client.der:/run/secrets/client.der:ro
+    depends_on:
+      mqtt-broker:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, curl, -fsS, --max-time, '3', http://127.0.0.1:8080/health/ready]
+      interval: 10s
+      timeout: 4s
+      retries: 5
+    networks: [simulation]
+    logging: &logging
+      driver: json-file
+      options: {max-size: 5m, max-file: '3'}
+  mqtt-broker:
+    image: eclipse-mosquitto:2.1.2@sha256:6f8d8a947c506f8a2290ec65cd4bd2bc7cb4d43fb5f6271f861cb013e2ef9797
+    user: '1883:1883'
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    ports:
+      - "${BIND_IP:-127.0.0.1}:1883:1883"
+    volumes:
+      - ./mosquitto/config:/mosquitto/config:ro
+      - ./mosquitto/data:/mosquitto/data
+      - ./secrets/observer-password:/run/secrets/observer-password:ro
+    healthcheck:
+      test: [CMD-SHELL, 'mosquitto_sub -h localhost -u observer -P "$$(cat /run/secrets/observer-password)" -t plant/demo/cnc/CNC-01/availability -C 1 -W 2 >/dev/null 2>&1; rc=$$?; [ $$rc -eq 0 ] || [ $$rc -eq 27 ]']
+      interval: 10s
+      timeout: 4s
+      retries: 5
+    networks: [simulation]
+    logging: *logging
+networks:
+  simulation:
+    driver: bridge

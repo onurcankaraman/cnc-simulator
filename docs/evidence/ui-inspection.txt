@@ -1,0 +1,9 @@
+2026-11-01: Real in-app browser opened http://127.0.0.1:8080/.
+Observed page title CNC-01 · Machine observatory.
+Observed live connection badge, changing sequence, RUNNING state, program block,
+spindle commanded/actual, XYZ, feed, power, energy, tool cards T01..T12,
+12 accessible progress indicators, six history canvases, event timeline,
+work-order table, current-shift A/P/Q/OEE, synthetic-origin notice.
+Screenshot visually inspected at 947px-wide viewport: responsive three-column
+process cards, readable type, no overlapping text. No CDN/external assets in HTML.
+This is a manual visual check, not a claim of exhaustive browser compatibility.

@@ -1,0 +1,14 @@
+.deps/
+build/
+data/
+secrets/
+.env
+logs/
+.venv/
+__pycache__/
+mosquitto/data/
+mosquitto/config/passwords
+
+.venv*/
+
+.DS_Store

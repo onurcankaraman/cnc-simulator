@@ -1,0 +1,73 @@
+{
+  "source": "actual C++ fake-clock trace; first 24 simulated hours",
+  "scope": "cutting samples stratified by program, tool and 100-rpm bucket; n>=20, wear range>=1%",
+  "strata": [
+    {
+      "program": 1001,
+      "tool": 3,
+      "rpm_bucket": 6200,
+      "samples": 37,
+      "wear_load_r": 0.9887,
+      "wear_vibration_r": 0.993
+    },
+    {
+      "program": 1001,
+      "tool": 1,
+      "rpm_bucket": 4700,
+      "samples": 53,
+      "wear_load_r": 0.9941,
+      "wear_vibration_r": 0.9922
+    },
+    {
+      "program": 1002,
+      "tool": 2,
+      "rpm_bucket": 2400,
+      "samples": 160,
+      "wear_load_r": 0.9994,
+      "wear_vibration_r": 0.973
+    },
+    {
+      "program": 1002,
+      "tool": 4,
+      "rpm_bucket": 3200,
+      "samples": 97,
+      "wear_load_r": 0.9947,
+      "wear_vibration_r": 0.9919
+    },
+    {
+      "program": 1003,
+      "tool": 1,
+      "rpm_bucket": 4500,
+      "samples": 116,
+      "wear_load_r": 0.9896,
+      "wear_vibration_r": 0.9922
+    },
+    {
+      "program": 1003,
+      "tool": 3,
+      "rpm_bucket": 5700,
+      "samples": 43,
+      "wear_load_r": 0.9811,
+      "wear_vibration_r": 0.9963
+    },
+    {
+      "program": 1004,
+      "tool": 8,
+      "rpm_bucket": 3800,
+      "samples": 21,
+      "wear_load_r": -0.2433,
+      "wear_vibration_r": 0.3648
+    },
+    {
+      "program": 1004,
+      "tool": 7,
+      "rpm_bucket": 4900,
+      "samples": 67,
+      "wear_load_r": 0.8596,
+      "wear_vibration_r": 0.8889
+    }
+  ],
+  "weighted_wear_load_r": 0.9346,
+  "weighted_wear_vibration_r": 0.9535,
+  "heuristic_result": "PASS"
+}

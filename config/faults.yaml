@@ -1,0 +1,170 @@
+# Synthetic hazards, not calibrated field reliability data.
+schema_version: 1
+faults:
+- code: 1101
+  name: SPINDLE_OVERLOAD
+  hazard_per_operating_hour: 0.018
+  min_duration_s: 30
+  max_duration_s: 210
+  severity: 2
+  precondition: operational; no overlapping active fault
+  effect: spindle load spike; immediate stop
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1102
+  name: SPINDLE_OVERTEMP
+  hazard_per_operating_hour: 0.004
+  min_duration_s: 180
+  max_duration_s: 2400
+  severity: 3
+  precondition: operational; no overlapping active fault
+  effect: thermal accumulation followed by stop
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1201
+  name: COOLANT_LOW_LEVEL
+  hazard_per_operating_hour: 0.016
+  min_duration_s: 180
+  max_duration_s: 1200
+  severity: 2
+  precondition: operational; no overlapping active fault
+  effect: flow ramps down before stop
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1202
+  name: COOLANT_BLOCKAGE
+  hazard_per_operating_hour: 0.005
+  min_duration_s: 180
+  max_duration_s: 1800
+  severity: 2
+  precondition: operational; no overlapping active fault
+  effect: flow low, pressure high, then stop
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1301
+  name: LOW_AIR_PRESSURE
+  hazard_per_operating_hour: 0.007
+  min_duration_s: 30
+  max_duration_s: 900
+  severity: 2
+  precondition: operational; no overlapping active fault
+  effect: air pressure ramps down, then interlock
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1302
+  name: LOW_HYDRAULIC
+  hazard_per_operating_hour: 0.004
+  min_duration_s: 300
+  max_duration_s: 2400
+  severity: 3
+  precondition: operational; no overlapping active fault
+  effect: hydraulic pressure ramps down; clamp unavailable
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1401
+  name: DOOR_INTERLOCK
+  hazard_per_operating_hour: 0.009
+  min_duration_s: 10
+  max_duration_s: 120
+  severity: 2
+  precondition: operational; no overlapping active fault
+  effect: door opens; immediate feed stop
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1402
+  name: ESTOP
+  hazard_per_operating_hour: 0.001
+  min_duration_s: 60
+  max_duration_s: 600
+  severity: 3
+  precondition: operational; no overlapping active fault
+  effect: e-stop asserted; fast spindle deceleration
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1501
+  name: AXIS_FOLLOWING
+  hazard_per_operating_hour: 0.006
+  min_duration_s: 180
+  max_duration_s: 1500
+  severity: 3
+  precondition: operational; no overlapping active fault
+  effect: axis motion stops; simulated re-home
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1502
+  name: LUBRICATION_WARN
+  hazard_per_operating_hour: 0.005
+  min_duration_s: 180
+  max_duration_s: 1200
+  severity: 1
+  precondition: operational; no overlapping active fault
+  effect: maintenance warning; NC continues
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: non-stopping warning clears
+- code: 1601
+  name: MATERIAL_STARVATION
+  hazard_per_operating_hour: 0.04
+  min_duration_s: 120
+  max_duration_s: 1500
+  severity: 1
+  precondition: operational; no overlapping active fault
+  effect: material wait; production stops
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+- code: 1602
+  name: OPERATOR_PAUSE
+  hazard_per_operating_hour: 0.025
+  min_duration_s: 30
+  max_duration_s: 360
+  severity: 1
+  precondition: operational; no overlapping active fault
+  effect: operator feed hold; resume same segment
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: resume segment
+- code: 1702
+  name: SENSOR_DRIFT
+  hazard_per_operating_hour: 0.003
+  min_duration_s: 60
+  max_duration_s: 900
+  severity: 1
+  precondition: operational; no overlapping active fault
+  effect: uncertain sensor quality; NC continues
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: non-stopping warning clears
+- code: 1801
+  name: QUALITY_HOLD
+  hazard_per_operating_hour: 0.015
+  min_duration_s: 120
+  max_duration_s: 900
+  severity: 2
+  precondition: operational; no overlapping active fault
+  effect: quality hold; inspection and discard interrupted cycle
+  duration_distribution: uniform(min_duration_s,max_duration_s)
+  repair_path: simulated operator/service intervention
+  recovery: repair/reset, discard incomplete cycle, READY
+conditional_faults:
+- code: 1001
+  condition: active_tool_wear_pct >= 80
+  severity: 1
+- code: 1002
+  condition: active_tool_wear_pct >= 100
+  severity: 3
+- code: 1003
+  condition: wear_and_high_load_and_cutting
+  severity: 3
+- code: 1701
+  condition: manual_injection_only
+  severity: 3

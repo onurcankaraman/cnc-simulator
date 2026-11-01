@@ -1,0 +1,2 @@
+ServiceFault (BadSecurityPolicyRejected, diagnostics: DiagnosticInfo(SymbolicId=None, NamespaceURI=None, Locale=None, LocalizedText=None, AdditionalInfo=None, InnerStatusCode=None, InnerDiagnosticInfo=None)) from server received  in response to CreateSessionRequest
+PASS default OPC None session rejected; anonymous MQTT rejected; observer MQTT publish not delivered

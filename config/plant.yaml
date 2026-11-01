@@ -1,0 +1,52 @@
+schema_version: 1
+machine:
+  id: CNC-01
+  kind: generic-3axis-vmc
+  x_range_mm: [0, 800]
+  y_range_mm: [0, 500]
+  z_range_mm: [0, 500]
+  max_spindle_rpm: 12000
+  max_spindle_power_kw: 22.0
+  magazine_slots: 12
+  default_program_id: 1001
+calendar:
+  timezone: Europe/Istanbul
+  shifts:
+    - {id: 1, start: '06:00', end: '14:00'}
+    - {id: 2, start: '14:00', end: '22:00'}
+    - {id: 3, start: '22:00', end: '06:00'}
+  breaks_per_shift:
+    - {offset_minutes: 145, duration_minutes: 10}
+    - {offset_minutes: 260, duration_minutes: 25}
+    - {offset_minutes: 395, duration_minutes: 10}
+  weekend_order_demand_factor: 0.70
+simulation:
+  speed: 1.0  # Fixed in production. fake clock only in tests.
+  engine_tick_ms: 200
+  snapshot_publish_ms: 1000
+  database_sample_ms: 5000
+  retention_hours: 24
+  retention_cleanup_seconds: 60
+  mqtt_telemetry_ms: 1000
+  max_s7_clients: 8
+  max_opcua_clients: 10
+  seed: null    # Generated once, then persisted for repeatable restoration.
+  default_profile: normal
+  work_order_target_qty: [40, 250]
+  setup_duration_seconds: [120, 720]
+quality:
+  nominal_reject_probability: 0.009
+  wear_multiplier_at_90_pct: 4.0
+  coolant_fault_multiplier: 6.0
+  high_vibration_multiplier: 2.5
+transport:
+  s7_listen_port: 1102
+  opcua_port: 4840
+  mqtt_broker_host: mqtt-broker
+  mqtt_broker_port: 1883
+  http_port: 8080
+  admin_enabled: false
+  opcua_allow_insecure: false
+security:
+  # Credentials are only provided by environment/secrets; do not write here.
+  bind_interface: 0.0.0.0

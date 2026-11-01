@@ -1,0 +1,7 @@
+certificate does not contain the hostname in DNSNames [local-hostname]. Some applications will check this.
+Revised values returned differ from subscription values: CreateSubscriptionResult(SubscriptionId=2, RevisedPublishingInterval=1000.0, RevisedLifetimeCount=10000, RevisedMaxKeepAliveCount=100)
+certificate does not contain the hostname in DNSNames [local-hostname]. Some applications will check this.
+Revised values returned differ from subscription values: CreateSubscriptionResult(SubscriptionId=3, RevisedPublishingInterval=1000.0, RevisedLifetimeCount=10000, RevisedMaxKeepAliveCount=100)
+certificate does not contain the hostname in DNSNames [local-hostname]. Some applications will check this.
+Revised values returned differ from subscription values: CreateSubscriptionResult(SubscriptionId=4, RevisedPublishingInterval=1000.0, RevisedLifetimeCount=10000, RevisedMaxKeepAliveCount=100)
+LOAD_READY 3 S7 + 3 encrypted OPC UA subscriptions + 3 MQTT subscribers

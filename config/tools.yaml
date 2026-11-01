@@ -1,0 +1,15 @@
+schema_version: 1
+# Illustrative parameters, not measured supplier tool-life data.
+tools:
+  - {slot: 1,  id: 1,  type_code: 1, name: FACE_MILL_50,  nominal_life_min: 350, initial_wear_pct: 17, max_diam_wear_mm: 0.24}
+  - {slot: 2,  id: 2,  type_code: 2, name: ROUGH_ENDMILL_16,nominal_life_min: 170, initial_wear_pct: 34, max_diam_wear_mm: 0.30}
+  - {slot: 3,  id: 3,  type_code: 3, name: END_MILL_12,    nominal_life_min: 300, initial_wear_pct: 41, max_diam_wear_mm: 0.22}
+  - {slot: 4,  id: 4,  type_code: 4, name: FINISH_MILL_10, nominal_life_min: 340, initial_wear_pct: 27, max_diam_wear_mm: 0.16}
+  - {slot: 5,  id: 5,  type_code: 5, name: DRILL_8,        nominal_life_min: 190, initial_wear_pct: 56, max_diam_wear_mm: 0.18}
+  - {slot: 6,  id: 6,  type_code: 5, name: DRILL_6,        nominal_life_min: 220, initial_wear_pct: 12, max_diam_wear_mm: 0.14}
+  - {slot: 7,  id: 7,  type_code: 3, name: BRASS_ENDMILL,  nominal_life_min: 450, initial_wear_pct: 20, max_diam_wear_mm: 0.18}
+  - {slot: 8,  id: 8,  type_code: 5, name: BRASS_DRILL,    nominal_life_min: 410, initial_wear_pct: 33, max_diam_wear_mm: 0.14}
+  - {slot: 9,  id: 9,  type_code: 6, name: SPARE_TAP_M6,   nominal_life_min: 200, initial_wear_pct: 0,  max_diam_wear_mm: 0.14}
+  - {slot: 10, id: 10, type_code: 7, name: SPARE_REAMER,   nominal_life_min: 260, initial_wear_pct: 7,  max_diam_wear_mm: 0.10}
+  - {slot: 11, id: 11, type_code: 3, name: SPARE_ENDMILL,  nominal_life_min: 320, initial_wear_pct: 0,  max_diam_wear_mm: 0.22}
+  - {slot: 12, id: 12, type_code: 5, name: SPARE_DRILL,    nominal_life_min: 230, initial_wear_pct: 0,  max_diam_wear_mm: 0.18}

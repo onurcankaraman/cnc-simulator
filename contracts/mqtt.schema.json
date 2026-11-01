@@ -1,0 +1,983 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CNC telemetry contract v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "machine_id",
+    "ts_utc",
+    "sequence",
+    "data"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "const": 1
+    },
+    "machine_id": {
+      "type": "string",
+      "const": "CNC-01"
+    },
+    "ts_utc": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "sequence": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "data": {
+      "type": "object",
+      "required": [
+        "state_code",
+        "reason_code",
+        "controller_mode",
+        "data_quality_code",
+        "sequence",
+        "unix_utc_s",
+        "spindle_target_rpm",
+        "spindle_actual_rpm",
+        "spindle_load_pct",
+        "spindle_temp_c",
+        "feed_command_mm_min",
+        "feed_actual_mm_min",
+        "feed_override_pct",
+        "spindle_override_pct",
+        "axis_x_mm",
+        "axis_y_mm",
+        "axis_z_mm",
+        "axis_x_velocity_mm_s",
+        "axis_y_velocity_mm_s",
+        "axis_z_velocity_mm_s",
+        "vibration_rms_mm_s",
+        "coolant_temp_c",
+        "coolant_flow_l_min",
+        "coolant_pressure_bar",
+        "power_kw",
+        "energy_kwh",
+        "hydraulic_pressure_bar",
+        "air_pressure_bar",
+        "ambient_temp_c",
+        "cabinet_temp_c",
+        "is_cutting",
+        "spindle_on",
+        "coolant_on",
+        "door_closed",
+        "estop_active",
+        "alarm_active",
+        "cycle_active",
+        "part_clamped",
+        "current_tool_id",
+        "tool_change_counter",
+        "program_block",
+        "cycle_elapsed_s",
+        "cycle_target_s",
+        "program_progress_pct",
+        "part_progress_pct",
+        "last_heartbeat_utc_s",
+        "active_tool_id",
+        "magazine_tool_count",
+        "active_wear_pct",
+        "active_life_remaining_min",
+        "active_cutting_minutes",
+        "active_diameter_wear_mm",
+        "active_length_offset_mm",
+        "active_load_factor",
+        "active_health_code",
+        "replacement_due",
+        "toolchange_inprogress",
+        "active_tool_type",
+        "tool_01_tool_id",
+        "tool_01_tool_type",
+        "tool_01_wear_pct",
+        "tool_01_cutting_minutes",
+        "tool_01_life_remaining_minutes",
+        "tool_02_tool_id",
+        "tool_02_tool_type",
+        "tool_02_wear_pct",
+        "tool_02_cutting_minutes",
+        "tool_02_life_remaining_minutes",
+        "tool_03_tool_id",
+        "tool_03_tool_type",
+        "tool_03_wear_pct",
+        "tool_03_cutting_minutes",
+        "tool_03_life_remaining_minutes",
+        "tool_04_tool_id",
+        "tool_04_tool_type",
+        "tool_04_wear_pct",
+        "tool_04_cutting_minutes",
+        "tool_04_life_remaining_minutes",
+        "tool_05_tool_id",
+        "tool_05_tool_type",
+        "tool_05_wear_pct",
+        "tool_05_cutting_minutes",
+        "tool_05_life_remaining_minutes",
+        "tool_06_tool_id",
+        "tool_06_tool_type",
+        "tool_06_wear_pct",
+        "tool_06_cutting_minutes",
+        "tool_06_life_remaining_minutes",
+        "tool_07_tool_id",
+        "tool_07_tool_type",
+        "tool_07_wear_pct",
+        "tool_07_cutting_minutes",
+        "tool_07_life_remaining_minutes",
+        "tool_08_tool_id",
+        "tool_08_tool_type",
+        "tool_08_wear_pct",
+        "tool_08_cutting_minutes",
+        "tool_08_life_remaining_minutes",
+        "tool_09_tool_id",
+        "tool_09_tool_type",
+        "tool_09_wear_pct",
+        "tool_09_cutting_minutes",
+        "tool_09_life_remaining_minutes",
+        "tool_10_tool_id",
+        "tool_10_tool_type",
+        "tool_10_wear_pct",
+        "tool_10_cutting_minutes",
+        "tool_10_life_remaining_minutes",
+        "tool_11_tool_id",
+        "tool_11_tool_type",
+        "tool_11_wear_pct",
+        "tool_11_cutting_minutes",
+        "tool_11_life_remaining_minutes",
+        "tool_12_tool_id",
+        "tool_12_tool_type",
+        "tool_12_wear_pct",
+        "tool_12_cutting_minutes",
+        "tool_12_life_remaining_minutes",
+        "job_id",
+        "program_id",
+        "part_id",
+        "job_target_qty",
+        "job_completed_qty",
+        "job_good_qty",
+        "job_reject_qty",
+        "current_cycle_elapsed_s",
+        "nominal_cycle_s",
+        "job_progress_pct",
+        "current_block",
+        "current_step_type",
+        "shift_id",
+        "job_state_code",
+        "total_parts_count",
+        "total_good_count",
+        "total_reject_count",
+        "cycle_sequence",
+        "last_cycle_duration_s",
+        "estimated_job_remaining_s",
+        "last_reject_code",
+        "pending_job_count",
+        "order_label",
+        "program_label",
+        "part_label",
+        "alarm_code",
+        "alarm_severity",
+        "alarm_latched",
+        "alarm_acknowledged",
+        "alarm_requires_operator",
+        "maintenance_due",
+        "alarm_started_unix_s",
+        "alarm_duration_s",
+        "last_alarm_code",
+        "last_stop_reason",
+        "event_sequence",
+        "last_event_utc_s",
+        "availability_state",
+        "quality_state",
+        "alarm_text"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "state_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 90
+        },
+        "reason_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 11
+        },
+        "controller_mode": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "data_quality_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "unix_utc_s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "spindle_target_rpm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 12000
+        },
+        "spindle_actual_rpm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 12000
+        },
+        "spindle_load_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 110
+        },
+        "spindle_temp_c": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "feed_command_mm_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 15000
+        },
+        "feed_actual_mm_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 15000
+        },
+        "feed_override_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 150
+        },
+        "spindle_override_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 150
+        },
+        "axis_x_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 800
+        },
+        "axis_y_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "axis_z_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "axis_x_velocity_mm_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "axis_y_velocity_mm_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "axis_z_velocity_mm_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 500
+        },
+        "vibration_rms_mm_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 30
+        },
+        "coolant_temp_c": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 75
+        },
+        "coolant_flow_l_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 65
+        },
+        "coolant_pressure_bar": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 20
+        },
+        "power_kw": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 25
+        },
+        "energy_kwh": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 9999999
+        },
+        "hydraulic_pressure_bar": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 150
+        },
+        "air_pressure_bar": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 12
+        },
+        "ambient_temp_c": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 55
+        },
+        "cabinet_temp_c": {
+          "type": "number",
+          "minimum": -10,
+          "maximum": 95
+        },
+        "is_cutting": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "spindle_on": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "coolant_on": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "door_closed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "estop_active": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alarm_active": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "cycle_active": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "part_clamped": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "current_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_change_counter": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "program_block": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "cycle_elapsed_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "cycle_target_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "program_progress_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "part_progress_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "last_heartbeat_utc_s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "active_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "magazine_tool_count": {
+          "type": "integer",
+          "minimum": 12,
+          "maximum": 12
+        },
+        "active_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "active_life_remaining_min": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1000
+        },
+        "active_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "active_diameter_wear_mm": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "active_length_offset_mm": {
+          "type": "number",
+          "minimum": -2,
+          "maximum": 2
+        },
+        "active_load_factor": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "active_health_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4
+        },
+        "replacement_due": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "toolchange_inprogress": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "active_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_01_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_01_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_01_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_01_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_01_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_02_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_02_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_02_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_02_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_02_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_03_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_03_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_03_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_03_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_03_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_04_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_04_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_04_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_04_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_04_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_05_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_05_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_05_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_05_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_05_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_06_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_06_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_06_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_06_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_06_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_07_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_07_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_07_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_07_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_07_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_08_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_08_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_08_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_08_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_08_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_09_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_09_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_09_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_09_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_09_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_10_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_10_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_10_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_10_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_10_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_11_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_11_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_11_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_11_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_11_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "tool_12_tool_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "tool_12_tool_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 15
+        },
+        "tool_12_wear_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "tool_12_cutting_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100000
+        },
+        "tool_12_life_remaining_minutes": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000
+        },
+        "job_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "program_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "part_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "job_target_qty": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "job_completed_qty": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "job_good_qty": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "job_reject_qty": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "current_cycle_elapsed_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "nominal_cycle_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "job_progress_pct": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "current_block": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "current_step_type": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 8
+        },
+        "shift_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "job_state_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "total_parts_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "total_good_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "total_reject_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "cycle_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "last_cycle_duration_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 86400
+        },
+        "estimated_job_remaining_s": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 10000000
+        },
+        "last_reject_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "pending_job_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "order_label": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "program_label": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "part_label": {
+          "type": "string",
+          "maxLength": 32
+        },
+        "alarm_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "alarm_severity": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "alarm_latched": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alarm_acknowledged": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alarm_requires_operator": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "maintenance_due": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "alarm_started_unix_s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "alarm_duration_s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "last_alarm_code": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "last_stop_reason": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 65535
+        },
+        "event_sequence": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "last_event_utc_s": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "availability_state": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "quality_state": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 10
+        },
+        "alarm_text": {
+          "type": "string",
+          "maxLength": 48
+        }
+      }
+    }
+  }
+}

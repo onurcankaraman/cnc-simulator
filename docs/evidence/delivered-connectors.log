@@ -1,0 +1,29 @@
+contract: 158 fields; DB bounds/overlaps/NodeIds PASS
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /app/build
+[1/12] Building CXX object CMakeFiles/cnc_core.dir/src/transport/snapshot.cpp.o
+[2/12] Building CXX object CMakeFiles/cnc_core.dir/src/core/engine.cpp.o
+[3/12] Building CXX object CMakeFiles/cnc_core.dir/src/adapters/sqlite_store.cpp.o
+[4/12] Linking CXX static library libcnc_core.a
+[5/12] Building CXX object CMakeFiles/cnc-simulator.dir/src/adapters/protocols.cpp.o
+[6/12] Building CXX object CMakeFiles/cnc-simulator.dir/src/adapters/http_server.cpp.o
+[7/12] Building CXX object CMakeFiles/cnc-simulator.dir/src/main.cpp.o
+[8/12] Linking CXX executable cnc-simulator
+[9/12] Building CXX object CMakeFiles/stream-memory.dir/tests/unit/stream_memory.cpp.o
+[10/12] Linking CXX executable stream-memory
+[11/12] Building CXX object CMakeFiles/unit-tests.dir/tests/unit/tests.cpp.o
+[12/12] Linking CXX executable unit-tests
+Internal ctest changing into directory: /app/build
+Test project /app/build
+    Start 1: deterministic
+1/2 Test #1: deterministic ....................   Passed   14.86 sec
+    Start 2: bounded_history
+2/2 Test #2: bounded_history ..................   Passed    0.57 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =  15.44 sec
+stream rows=5000 bytes=20185001 max_chunk=20185 peak_rss_kib=7808
+ERROR:snap7.common:b'CPU : Item not available'
+{"result": "PASS", "fields": 158, "aligned_sequences": [33409, 33410, 33411], "db_sizes": [256, 256, 256, 128], "s7_slots": [0, 1], "s7_write": "REJECTED", "ua_write": "REJECTED", "ua_subscription_notifications": 5, "ua_security": "Basic256Sha256/SignAndEncrypt", "source_timestamp": "2026-11-01T08:20:54.308000+00:00", "mqtt_schema": 1, "http_validation": "PASS", "utc": "2026-11-01T08:20:55Z"}

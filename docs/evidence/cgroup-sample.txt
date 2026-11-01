@@ -1,0 +1,2 @@
+cnc-smulatoru-cnc-simulator-1 7.312MiB / 3.827GiB 0.98%
+cnc-smulatoru-mqtt-broker-1 3.855MiB / 3.827GiB 0.04%

@@ -1,0 +1,11 @@
+.deps
+.git
+build
+data
+secrets
+.env
+logs
+.venv
+
+.venv*
+.DS_Store

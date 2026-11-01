@@ -1,0 +1,11 @@
+ Container cnc-smulatoru-cnc-simulator-1 Stopping 
+ Container cnc-smulatoru-cnc-simulator-1 Stopped 
+ Container cnc-smulatoru-mqtt-broker-1 Waiting 
+ Container cnc-smulatoru-mqtt-broker-1 Healthy 
+ Container cnc-smulatoru-cnc-simulator-1 Starting 
+ Container cnc-smulatoru-cnc-simulator-1 Started 
+ Container cnc-smulatoru-mqtt-broker-1 Stopping 
+ Container cnc-smulatoru-mqtt-broker-1 Stopped 
+ Container cnc-smulatoru-mqtt-broker-1 Starting 
+ Container cnc-smulatoru-mqtt-broker-1 Started 
+{"result": "PASS", "restart": "counters/tools/order/energy preserved; incomplete cycle not counted", "broker_outage": "engine/DB continued; MQTT reconnected", "outage_sequence_delta": 6, "utc": "2026-11-01T08:05:04Z"}

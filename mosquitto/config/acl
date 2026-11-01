@@ -1,0 +1,4 @@
+user simulator
+topic write plant/demo/cnc/CNC-01/#
+user observer
+topic read plant/demo/cnc/CNC-01/#

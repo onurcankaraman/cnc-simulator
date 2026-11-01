@@ -1,0 +1,5 @@
+PID                 COMMAND             RSS
+975738              docker-init         468
+975812              cnc-simulator       16868
+PID                 COMMAND             RSS
+937881              mosquitto           7424

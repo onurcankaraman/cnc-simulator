@@ -1,0 +1,10 @@
+{
+  "duration_s": 300.11,
+  "initial_rss_mib": 23.891,
+  "final_rss_mib": 23.73,
+  "peak_rss_mib": 23.906,
+  "average_cpu_one_core_pct": 0.936,
+  "samples": 31,
+  "24h_soak": "NOT RUN",
+  "memory_target_short_run": "PASS"
+}

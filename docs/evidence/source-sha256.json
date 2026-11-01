@@ -1,0 +1,22 @@
+{
+  "captured_utc": "2026-11-01T08:22:01.985961+00:00",
+  "files": {
+    "src/config.hpp": "4c48da5d23bc913d62e5e5547972feacb55156eb391069e8bc5c3147293b9e2b",
+    "src/config.cpp": "884e39ce9fce415b0666da44b5b53efb724a978546d9df6266e01e7252a3d6f5",
+    "src/main.cpp": "9526a1d3e089c5a3a50ec60fc3bd71a40148118ff9532843fbff53a23ad15df5",
+    "src/ui/index.html": "99447f5c521d10ebf2f7d9703521c93f902e0b3609af8c5e9281e9e8763005a6",
+    "src/ui/style.css": "b0a4b67f060ea961e876ff1dc7025646700a6723d8c70978c145b1116b24f1d7",
+    "src/ui/app.js": "096d943080831a83351c9b4689f3ff6cff67d0605b94958c7daa92abb10da761",
+    "src/transport/snapshot.hpp": "7eb5a737cab08aa5e32c9c7840a5d5bffc71bcee77cc5363e39cd71408c8f143",
+    "src/transport/snapshot.cpp": "493f91e6342115c8159747be6ddce626286dad89f34ef5bc1e2a08d48c3a896b",
+    "src/transport/contract.hpp": "4c30cf659a582416dddcb055e3b24910d5f3f13a55cf9872e8de707b2b431a94",
+    "src/core/engine.hpp": "e8ad1fc4d32d0ed7ede5189cb8ef0e18166aa1bf3131d924e39879a2572b53aa",
+    "src/core/engine.cpp": "da685cc10b2974c6f5886d0d1d53c4613c775273f5515e3bffee4ecbbd9570b5",
+    "src/adapters/http_server.cpp": "df35366f1d0af2cca149517dc877e17a145b14651c2e4172a13e2f7c015dc101",
+    "src/adapters/sqlite_store.hpp": "b99be9b3aa88dfe2111d7b197238d287347379e7cec06161f6b770d6918a34ad",
+    "src/adapters/protocols.cpp": "c09c46dd68974f7741d12f2a7d0145d3ca836e294715e1e8725120e8d0eb3f6f",
+    "src/adapters/http_server.hpp": "842c1bc4dd3e1c1cfb45e5a494819005188137599f50014f9e8296dfb7de9526",
+    "src/adapters/sqlite_store.cpp": "7a2d9f72112b57e84e5eba70f3f7c659af1b03c4ed46c4150ece6364a6085a92",
+    "src/adapters/protocols.hpp": "5813c2f8d8a2452ccab4878bb0364f85615c438007511ee26e9633eb8fee1f68"
+  }
+}

@@ -1,0 +1,38 @@
+name: Build and protocol tests
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+jobs:
+  integration:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Prepare independent clients
+        run: |
+          python -m venv .venv312
+          .venv312/bin/pip install -r tests/requirements.txt
+      - name: Generate local credentials
+        run: ./scripts/bootstrap.sh
+      - name: Build and start
+        run: docker compose up -d --build --wait --wait-timeout 180
+      - name: Verify real protocols
+        run: ./scripts/smoke-connectors.sh
+      - name: Verify protocol access restrictions
+        run: .venv312/bin/python tests/integration/security.py
+      - name: Verify restart recovery
+        run: .venv312/bin/python tests/e2e/recovery.py
+      - name: Collect diagnostics
+        if: always()
+        run: docker compose logs --no-color > logs/ci-compose.log
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: diagnostics
+          path: logs/ci-compose.log
+      - name: Stop services
+        if: always()
+        run: docker compose down

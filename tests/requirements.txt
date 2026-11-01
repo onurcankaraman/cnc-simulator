@@ -1,0 +1,6 @@
+# Python 3.12 (asyncua 1.1.5 is not compatible with Python 3.14).
+python-snap7==2.0.2
+asyncua==1.1.5
+paho-mqtt==2.1.0
+jsonschema==4.23.0
+PyYAML==6.0.2
