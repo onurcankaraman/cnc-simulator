@@ -67,6 +67,9 @@ async def main():
   s7.disconnect();s7.connect(HOST,0,0,tcp_port=PORT);assert len(s7.db_read(1,0,256))==256
   assert len(api('/api/v1/tools')['data']['tools'])==12
   assert api('/api/v1/about')['data_origin']=='Synthetic'
+  for asset in ('/','/app.js','/style.css'):
+   with urllib.request.urlopen('http://'+HOST+':8080'+asset,timeout=4) as response:
+    assert len(response.read())>100, 'empty static asset: '+asset
   for path in ['/admin/inject-fault','/api/v1/history?limit=5001','/api/v1/history?from=oops','/api/v1/history?step=0']:
    try:api(path)
    except urllib.error.HTTPError as e:assert e.code in (400,404)

@@ -2,6 +2,9 @@
 set -eu
 cd "$(dirname "$0")/.."
 mkdir -p secrets data mosquitto/data logs
+# Public configuration must remain readable by non-root container users.
+chmod 755 config mosquitto/config
+chmod 644 config/*.yaml mosquitto/config/acl mosquitto/config/mosquitto.conf
 [ -e .env ] || cp .env.example .env
 for name in mqtt-password observer-password admin-token; do
   [ -s "secrets/$name" ] || openssl rand -hex 32 > "secrets/$name"

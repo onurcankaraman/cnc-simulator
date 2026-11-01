@@ -16,5 +16,6 @@ WORKDIR /app
 COPY --from=build /app/build/cnc-simulator /app/cnc-simulator
 COPY config ./config
 COPY src/ui ./ui
+RUN chmod -R a+rX /app/config /app/ui
 USER cnc
 ENTRYPOINT ["/app/cnc-simulator"]
