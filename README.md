@@ -2,7 +2,7 @@
 
 A C++17 synthetic CNC machine with real Snap7 Server, open62541 OPC UA, libmosquitto publishing, a bundled Mosquitto broker, TimescaleDB/PostgreSQL history, and a static dashboard. One `MachineSnapshot` supplies all 158 CSV contract fields. No Python/Node production runtime, external cloud, CDN, 3D, or real PLC control.
 
-**Local TimescaleDB migration:** one Compose project, three containers (C++ runtime, Mosquitto, TimescaleDB). Direct SQL access is available. Old SQLite measurements do not validate this revision; see [test report](docs/TEST_REPORT.md). **24h soak = NOT RUN**.
+**TimescaleDB deployment:** one Compose project, three containers (C++ runtime, Mosquitto, TimescaleDB). Direct SQL access is available. Old SQLite measurements do not validate this revision; see [test report](docs/TEST_REPORT.md). **24h soak = NOT RUN**.
 
 ## Start
 
@@ -15,7 +15,7 @@ docker compose ps
 curl -fsS http://127.0.0.1:8080/health/ready
 ```
 
-Open [the dashboard](http://127.0.0.1:8080). Bootstrap creates random local credentials and self-signed server/test-client certificates in ignored `secrets/`; it does not overwrite existing secrets. Never commit that directory. Data and checkpoints persist in the `timescale-data` Docker volume. Stop with `docker compose down`; **do not use `down -v`** if counters/tool life must survive. Existing `data/cnc.sqlite` is not modified, imported or used by the new runtime. Local TimescaleDB starts with fresh state; production cutover requires a separately tested state migration.
+Open [the dashboard](http://127.0.0.1:8080). Bootstrap creates random local credentials and self-signed server/test-client certificates in ignored `secrets/`; it does not overwrite existing secrets. Never commit that directory. Data and checkpoints persist in the `timescale-data` Docker volume. Stop with `docker compose down`; **do not use `down -v`** if counters/tool life must survive. Existing `data/cnc.sqlite` is not modified, imported or used by the new runtime. New local databases start with fresh state. The live deployment was migrated with a validated checkpoint/history copy on 2026-11-02; see the test report.
 
 Default host binding is **127.0.0.1**, admin is disabled, MQTT requires authentication, and OPC UA requires an encrypted channel. Ports are S7 **102**, OPC UA **4840**, MQTT **1883**, HTTP **8080**, PostgreSQL **15432** (always loopback). If 102 is occupied, set `S7_PORT=1102` in `.env` and use that port in clients. Internal S7 remains 1102; no bind-service capability or root runtime is needed.
 
