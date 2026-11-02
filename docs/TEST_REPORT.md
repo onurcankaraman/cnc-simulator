@@ -1,3 +1,15 @@
+# Public demo SQL verification — 2026-11-02
+
+At the owner's explicit request, `cnc.digitheta.dev:5432` now exposes only the `cnc_demo` account through mandatory PostgreSQL TLS. Credentials are not committed. The server's production override/HBA configuration remains private; default local Compose networking is unchanged.
+
+Actual command: `.venv312/bin/python /tmp/cnc-public-sql-test.py` on the external deployment workstation; independent psycopg client, no SSH tunnel for SQL, explicit [root CA](certificates/cnc-demo-root-ca.pem), `sslmode=verify-full`, password/SCRAM authentication (`gssencmode=disable`), 15-second connect timeout. [Raw result](evidence/public-sql-tls.log): **PASS**. TLS1.3 / TLS_AES_256_GCM_SHA384, 158 payload fields, live telemetry/events/orders readable. Writes remained denied after disabling the client's read-only transaction flag. Runtime checkpoint access and cleanup-function execution were denied. Plaintext, wrong password, wrong hostname and external postgres/cnc_writer/cnc_reader connections were rejected.
+
+The app's existing writer connection was independently observed using TLS1.3. All readiness checks passed after database recreation; the simulator itself was not restarted, and its visible persistence-failure counter incremented once during reconnection. Only the TimescaleDB container ID changed; all other49 containers were unchanged. Database limits remain512MiB/1CPU. Traefik was neither edited nor restarted. Certificate synchronization was executed successfully and its systemd timer is active. Renewed files are atomically replaced in a directory mount and PostgreSQL reloaded. These are deployment/configuration tests, not a 24h soak; **24h soak = NOT RUN**.
+
+Earlier SSH-only deployment notes below are historical and superseded by this authorized public-read-only configuration.
+
+---
+
 # Live TimescaleDB cutover — 2026-11-02 (Europe/Istanbul)
 
 Application commit **0ff0a99** deployed on Linux x86_64 using Docker Compose project `cnc-live`. Only the CNC simulator container was replaced; the existing broker and all 47 unrelated containers retained their IDs. One new TimescaleDB container was added. All three CNC services are healthy. Traefik was not changed or restarted.

@@ -119,3 +119,30 @@ psql -h 127.0.0.1 -p 25432 -U cnc_reader -d cnc -W
 ```
 
 Use the existing table queries above. `cnc_reader` can read telemetry/events/orders, but cannot modify data or read private runtime checkpoints. Operator runbook and secrets are under `/opt/cnc-simulator` on the host; never publish those files.
+
+
+## Public demo PostgreSQL over TLS (2026-11-02)
+
+The owner explicitly authorized worldwide access to the synthetic demo database. SSH is no longer required for the **public demo account**. Earlier SSH-only guidance above is superseded for this account; local Compose defaults still bind only to loopback.
+
+| Setting | Value |
+|---|---|
+| Host | `cnc.digitheta.dev` |
+| Port | `5432` |
+| Database | `cnc` |
+| User | `cnc_demo` |
+| Password | Distributed privately; generated 32 random bytes / 64 hex characters |
+| SSL mode | **`verify-full`** |
+| Root CA | [ISRG Root X1 PEM](certificates/cnc-demo-root-ca.pem), verified against the served certificate chain |
+
+DBeaver/DataGrip: select PostgreSQL, enter these settings, enable SSL, supply the downloaded PEM as the root/CA certificate and verify the hostname. No SSH settings or client certificate are needed. The hostname is also used by the existing HTTPS website; PostgreSQL uses its own port.
+
+```sh
+psql "host=cnc.digitheta.dev port=5432 dbname=cnc user=cnc_demo sslmode=verify-full sslrootcert=/path/to/cnc-demo-root-ca.pem gssencmode=disable connect_timeout=15" -W
+```
+
+The account can SELECT `telemetry`, `events` and `orders`; writes, schema changes and private `runtime_state` access are not granted. A connection limit of five and query/temporary-file limits bound ordinary demo use. TLS is mandatory; plaintext, wrong passwords, incorrect certificate hostnames and public administrator/writer/private-reader connections were tested and rejected. Existing REST/MQTT endpoints and credentials are unchanged. Old private SSH reader connections now also require PostgreSQL SSL (`require` for loopback tunnel use).
+
+Certificates renew through existing Traefik ACME management. A dedicated host timer copies only this hostname's renewed certificate into the database's read-only TLS directory and reloads PostgreSQL every 12 hours when it changes. Admin/writer secrets and the TLS private key stay on the server and are not in this repository. The bundled CA is a public trust anchor, not a server certificate or private key.
+
+See [PostgreSQL SSL and HBA rules](https://www.postgresql.org/docs/17/auth-pg-hba-conf.html) and [actual external test evidence](evidence/public-sql-tls.log). **24h soak = NOT RUN.**
