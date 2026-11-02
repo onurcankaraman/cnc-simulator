@@ -1,8 +1,10 @@
+> 2026-11-02 kullanıcı değişikliği: SQLite kaldırıldı; TimescaleDB/PostgreSQL zorunlu. Lokal dağıtım tek Compose projesinde üç konteynerdir. Eski iki-konteyner topolojisi geçersizdir. ≤100 MiB hedefi simülatör+broker için korunur; TimescaleDB process RSS ve üç servis toplamı ayrıca ölçülür, bu toplam için yeni bir limit varsayılmaz. Canlıya geçiş ve eski SQLite checkpoint aktarımı bu lokal değişiklikle yapılmaz.
+
 # CNC Digital Twin / Virtual Machine & PLC — Uygulama Teknik Şartnamesi
 
-**Sürüm:** 1.0 — 2026-11-01  
-**Statü:** Uygulamaya esas tasarım; henüz uygulanmış/test edilmiş ürün değildir.  
-**Hedef:** Tek CNC için, Linux sunucusunda 7/24 açık, gerçekçi sentetik üretim verisi üreten, S7 / OPC UA / MQTT erişimi ve son 24 saatin SQLite geçmişini sunan, düşük bellekli Docker dağıtımı.  
+**Sürüm:** 1.0 — 2026-11-01
+**Statü:** Uygulamaya esas tasarım; henüz uygulanmış/test edilmiş ürün değildir.
+**Hedef:** Tek CNC için, Linux sunucusunda 7/24 açık, gerçekçi sentetik üretim verisi üreten, S7 / OPC UA / MQTT erişimi ve son 24 saatin TimescaleDB geçmişini sunan, düşük bellekli Docker dağıtımı.
 **İşletim modeli:** Tek teslimat; özellikleri daha sonraya erteleyen faz planı yok. İnşa ve doğrulama adımları birer kontrol noktasıdır.
 
 ## 0. MİMARİ KARARLAR — KESİN
@@ -13,12 +15,12 @@
 | S7 | Snap7 **Server** (klasik S7comm, ISO-on-TCP), simülatörün sağladığı standart DB'ler | Gerçek S7-1200 firmware / S7CommPlus / TIA programlama **değil** |
 | OPC UA | open62541 (v1.5.x sabitlenmiş ve test edilmiş sürüm) | IEC 62541 veri okuma / subscription; gerçek OPC UA server |
 | MQTT | libmosquitto istemcisi + ayrı hafif Eclipse Mosquitto broker konteyneri | MQTT yayıncı broker değildir; dış broker bağımlılığı olmadan teslim |
-| Kalıcılık | SQLite WAL, 24 saatlik hareketli pencere + kalıcı küçük runtime state | PostgreSQL / InfluxDB yok; disk üstünde |
+| Kalıcılık | TimescaleDB / PostgreSQL, 24 saatlik hareketli pencere + kalıcı runtime state | C++ libpq; ayrı Docker servisi |
 | Yönetim | Küçük C++ HTTP sunucusu; yalnızca okunur dashboard ve kontrollü admin API | React, Node.js, 3D runtime, CDN yok |
 | Model | Tek kaynak `MachineSnapshot`, olay odaklı makine durum makinesi | Tüm protokoller aynı fiziksel olayı yansıtacak |
 | Simülasyon saati | `steady_clock` ile gerçek zaman; UTC kalıcı timestamp | NTP / saat ayar değişiminden iş çevrimi bozulmasın |
 | Dağıtım | Docker Compose: `cnc-simulator`, `mqtt-broker`; kalıcı `data/` hacmi | Tek komutla kurulum, restart policy, healthcheck |
-| RAM | **Kabul hedefi:** iki konteynerin çalışma anı RSS toplamı ≤100 MiB, 3'er istemci yükü altında 24 saat | 50 MiB ideal; kesin tüketim **ölçülmeden garantilenemez** |
+| RAM | **Kabul hedefi:** simülatör + broker çalışma anı RSS toplamı ≤100 MiB, 3'er istemci yükü altında 24 saat | 50 MiB ideal; kesin tüketim **ölçülmeden garantilenemez** |
 | Üretim rolü | Test/demo/dataset, sentetik veri olduğu README ve yönetim metaverisinde açık | Gerçek PLC/güvenlik kontrolü yerine kullanılmaz |
 
 **Hedef dışı:** eksiksiz G-code yorumlayıcısı, gerçek kesme fiziği/FEA, IEC 61131-3 çalıştırma, gerçek S7-1200 firmware kimliği, Siemens sertifikasyonu, 3D model/Unity, çoklu makine, bulut bağımlılığı, uzaktan gerçek tezgâh kontrolü. Bunları 1.0'a sessizce ekleme.
@@ -40,7 +42,7 @@
                                          |
                              IMMUTABLE MachineSnapshot
                                 |        |       |       |
-                               S7     OPC UA    MQTT    SQLite
+                               S7     OPC UA    MQTT    TimescaleDB
                             DB1..4  ns=2       broker  24h WAL
                                 |        |       |       |
                          existing S7 / OPC UA / MQTT connectors
@@ -52,13 +54,13 @@
 
 **Tek yazıcı kuralı:** `Engine` dışında hiçbir yayıncı model durumunu değiştiremez. Engine her 200 ms'de bir yeni tam snapshot üretir, snapshot yalnızca referans veya kopya olarak yayıncılara aktarılır. OPC UA / MQTT / DB / S7 farklı anlarda yayın yapabilse de her yayında `sequence` ve UTC zaman bulunur. Aynı sequence için alanlar aynı snapshot'la eşleşmelidir; farklı protokolleri karşılaştırırken sequence'a göre hizala.
 
-**Kompakt thread modeli:** bir engine/event-loop, bir OPC UA pump (gerekirse aynı loop), Snap7'in kendi kısıtlı worker'ları, MQTT arka plan I/O, HTTP küçük I/O ve SQLite tek writer. Sınırsız queue/thread yok. Bounded FIFO: telemetry yerine en güncel snapshot sakla; event queue ≤256, sırayla yaz, kritik olay kaybında görünür hata ve health bozulması.
+**Kompakt thread modeli:** bir engine/event-loop, bir OPC UA pump (gerekirse aynı loop), Snap7'in kendi kısıtlı worker'ları, MQTT arka plan I/O, HTTP küçük I/O ve TimescaleDB tek writer. Sınırsız queue/thread yok. Bounded FIFO: telemetry yerine en güncel snapshot sakla; event queue ≤256, sırayla yaz, kritik olay kaybında görünür hata ve health bozulması.
 
 ## 2. VARSAYIMLAR VE PARAMETRELER
 
 - **V1 makine:** Generic 3-axis vertical machining center, `CNC-01`, X=800mm, Y=500mm, Z=500mm, 12 takımlı magazin; X/Y/Z eksenleri ve 4. eksen yok.
 - **V1 PLC davranışı:** S7 klasik DB erişimi için görünür sanal PLC; rack=0, slot=1 test edilir, istemcide slot=0 veya farklı TSAP gerektiğinde bağlantı parametreleri testle belirlenecek. Model kimlik bilgileri Siemens donanımı olduğunu iddia etmeyecek.
-- **Saat dilimi:** fabrikadaki vardiya ve iş planı için `Europe/Istanbul`; tarih/geçmiş, SQLite ve MQTT timestamp için UTC (ISO 8601 `Z`).
+- **Saat dilimi:** fabrikadaki vardiya ve iş planı için `Europe/Istanbul`; tarih/geçmiş, TimescaleDB ve MQTT timestamp için UTC (ISO 8601 `Z`).
 - **Varsayılan süreç:** 3 vardiya 06:00–14:00, 14:00–22:00, 22:00–06:00; bütün vardiyalarda iş emri bulunabilir; vardiyada 2 kısa mola ve yemek planı config'de. Hafta sonu normalden düşük ama sıfır olmayan iş yoğunluğu.
 - **Engine:** 200 ms, ortak snapshot 1 Hz, MQTT telemetri 1 Hz, S7 alanları 1 Hz veya değişimde, OPC UA values 1 Hz, SQL snapshot 5 sn, olaylar anında; health 10 sn, temizleme 60 sn.
 - **Makine çalışma oranı:** tek gün için %60–85 üretim/çevrim ağırlıklı *konfigüre edilebilir hedef aralığı*, her gün sabit oran zorlanmayacak; başlangıç varsayımı, saha verisi ölçümü değil.
@@ -190,7 +192,7 @@ Her arıza için YAML'da `id`, `precondition`, saatlik nominal hazard, `severity
 - Broker `eclipse-mosquitto` image: güvenli, sabit major/minor ve digest belgele; test profilinde 1883 private. Publisher user parola `.env` / Docker secret; subscriber için yalnız `read` ACL; broker anonymous erişim **kapalı**. Broker internete açık veya production subnet'e bridge edilmez.
 - `plant/demo/cnc/CNC-01/telemetry` her 1 sn, JSON, QoS 0, retained=false; `.../state` değişimde ve her 30s heartbeat, QoS 1 retained=true; `.../events` anında, QoS 1 retained=false; `.../tools` değişimde ve 60s, QoS 1 retained=true; `.../availability` online/offline LWT ve re-connect publish, QoS1 retained=true.
 - Bütün mesajlarda `schema_version=1`, `machine_id`, `ts_utc`, `sequence`, `data`; `telemetry` data key'leri CSV ile **birebir** aynı. `tool list` 12 kayıt. Event `event_id`, `code`, `severity`, `start/end`, `reason`, `duration_s`, `order_id`, `tool_id` içerir.
-- En fazla 3 kez artan backoff'dan sonra yeniden bağlanmaya *devam* (3 bağlantıdan sonra vazgeçme yok), 1–60s capped exponential backoff + jitter; bağlantı kesintisi üretim motorunu durdurmaz. Retained `online=false` için LWT; tekrar bağlanınca online true. MQTT telemetry için sonsuz offline queue birikimi yok; son snapshot gönderilir. Event kayıp veya drop gözlemlenebilir metric ve SQLite olay kaydı sağlar.
+- En fazla 3 kez artan backoff'dan sonra yeniden bağlanmaya *devam* (3 bağlantıdan sonra vazgeçme yok), 1–60s capped exponential backoff + jitter; bağlantı kesintisi üretim motorunu durdurmaz. Retained `online=false` için LWT; tekrar bağlanınca online true. MQTT telemetry için sonsuz offline queue birikimi yok; son snapshot gönderilir. Event kayıp veya drop gözlemlenebilir metric ve TimescaleDB olay kaydı sağlar.
 
 **Örnek telemetry mesajı** (rakamlar açıklayıcıdır, gerçek uygulamadan alınmamıştır):
 
@@ -219,14 +221,14 @@ Her arıza için YAML'da `id`, `precondition`, saatlik nominal hazard, `severity
 
 ## 8. VERİTABANI, SÜREKLİLİK VE GEÇMİŞ
 
-- SQLite tek dosya `/data/cnc.sqlite`, WAL + `synchronous=NORMAL`, `busy_timeout=5000`, düzenli checkpoint. WAL shutdown ve yüksek disk kullanımına karşı `wal_checkpoint` planı ve veritabanı boyut izleme bulunur. İşlem sırasında çok bağlantı açıp kapatma yok; prepared statement ve transaction kullan.
-- `telemetry(ts_ms INTEGER PRIMARY KEY, seq INTEGER NOT NULL, state_code INTEGER, job_id INTEGER, program_id INTEGER, tool_id INTEGER, spindle_rpm REAL, load_pct REAL, feed_mm_min REAL, x_mm REAL, y_mm REAL, z_mm REAL, vibration REAL, spindle_temp_c REAL, power_kw REAL, energy_kwh REAL, wear_pct REAL, coolant_flow REAL, alarm_code INTEGER, good_count INTEGER, scrap_count INTEGER, payload_json TEXT NOT NULL)` — bütün CSV alanları `payload_json` altında 5sn aralıkla; SQL sorgulanabilir çekirdek metrikler kolonlarda.
-- `events(id INTEGER PRIMARY KEY, ts_ms INTEGER, type TEXT, code INTEGER, severity INTEGER, state_from INTEGER, state_to INTEGER, details_json TEXT)`.
+- TimescaleDB / PostgreSQL kalıcı Docker volume kullanır. C++ libpq parametreli sorguları ve transaction kullanır; telemetry + events saatlik BIGINT UTC-ms hypertable, JSON alanları JSONB. Her snapshot state/event ile atomik yazılır. Runtime writer ve salt okunur developer rolleri ayrıdır. Bağlantı kaybında engine çalışır, health bozulur, bounded retry ile geri bağlanır; ilk açılışta checkpoint okunamıyorsa sayaçları sıfırlamak yerine startup başarısız olur.
+- `telemetry(ts_ms BIGINT PRIMARY KEY, seq BIGINT NOT NULL, state_code INTEGER, job_id INTEGER, program_id INTEGER, tool_id INTEGER, spindle_rpm REAL, load_pct REAL, feed_mm_min REAL, x_mm REAL, y_mm REAL, z_mm REAL, vibration REAL, spindle_temp_c REAL, power_kw REAL, energy_kwh REAL, wear_pct REAL, coolant_flow REAL, alarm_code INTEGER, good_count INTEGER, scrap_count INTEGER, payload_json JSONB NOT NULL)` — bütün CSV alanları `payload_json` altında 5sn aralıkla; SQL sorgulanabilir çekirdek metrikler kolonlarda.
+- `events(id BIGINT, ts_ms BIGINT, type TEXT, code INTEGER, severity INTEGER, state_from INTEGER, state_to INTEGER, details_json JSONB, PRIMARY KEY(ts_ms,id))`.
 - `orders(order_id INTEGER PRIMARY KEY, program_id INTEGER, part_id INTEGER, target_qty INTEGER, good_qty INTEGER, scrap_qty INTEGER, started_ms INTEGER, completed_ms INTEGER, status TEXT)` — sadece son 24 saat ile kesişen işler ve aktif iş; geçmişi tutmak gerekiyorsa telemetry 24s ilkesine uygun tutulur.
-- `runtime_state(key TEXT PRIMARY KEY, value_json TEXT NOT NULL, updated_ms INTEGER)` — sayaçlar, 12 takımın wear, aktif emir, numaralar, PRNG state, energy. **Bu tablo 24 saatte silinmez**, çünkü süreç durumunu yeniden başlatmada korur; tarihsel telemetry değildir.
+- `runtime_state(key TEXT PRIMARY KEY, value_json JSONB NOT NULL, updated_ms INTEGER)` — sayaçlar, 12 takımın wear, aktif emir, numaralar, PRNG state, energy. **Bu tablo 24 saatte silinmez**, çünkü süreç durumunu yeniden başlatmada korur; tarihsel telemetry değildir.
 - SQL insert: 5sn aralıkla telemetry, state/event anında. `DELETE FROM telemetry WHERE ts_ms < now_utc_ms-86400000`; events ve bitmiş orders için 24 saatlik mantık, ancak aktif order kaydını silme. Temizlik 60sn; 24h+60sn tolerans ve query'de kesin `>= now-24h` filtresi.
-- SQLite `VACUUM` her dakika koşulmaz; WAL checkpoint ve boş sayfa yönetimi için haftalık opsiyonel bakım, kaynak kısıtıyla çakışıyorsa işlenmesin. Disk boyutu / WAL / insert failure health'te görünür olsun.
-- Boşluk: 10 saniyelik veri kaydı kesintisini SQLite'da **uydurma değerlerle geriye dönük doldurma**. `sample_gap` event'i bırak. Önemli reboot'ta yarım parça discard ve `restart_interruption` kaydı. Program başlar başlamaz tam son 24 saat **önceden doldurulmuş** olarak gösterilmez; 24 saatlik pencere zamanla dolar.
+- TimescaleDB background job her 60 saniyede eski chunk'ları düşürür ve sınır chunk içindeki 24 saatten eski satırları siler. Job engine kapalıyken de çalışır. PostgreSQL autovacuum/WAL varsayılan dayanıklılığı korunur.
+- Boşluk: 10 saniyelik veri kaydı kesintisini TimescaleDB'da **uydurma değerlerle geriye dönük doldurma**. `sample_gap` event'i bırak. Önemli reboot'ta yarım parça discard ve `restart_interruption` kaydı. Program başlar başlamaz tam son 24 saat **önceden doldurulmuş** olarak gösterilmez; 24 saatlik pencere zamanla dolar.
 
 **API (read-only):** `GET /health/live`, `GET /health/ready` (kısa), `GET /api/v1/about`, `GET /api/v1/status`, `GET /api/v1/history?from=<UTC>&to=<UTC>&limit=1440&step=60`, `GET /api/v1/events?limit=100`, `GET /api/v1/tools`, `GET /api/v1/orders`, `GET /api/v1/metrics` (Prometheus text format opsiyonel; fazla bellek isterse sade JSON). `from/to` ve limit strict validation, sayfalama, 24h dışı sorgu reddi/boş liste, 5000 satır üst sınırı. HTTP sadece configured private address; history downsample (1s/5s/60s vb.) SQL-side aggregate veya streaming sınırlı.
 
@@ -275,7 +277,7 @@ services:
 
 - image multi-stage optimized (`-O2`, `-DNDEBUG`, strip debug symbols), CMake/Ninja; C++17; native dependencies **sabit SHA/tag**, SBOM + THIRD_PARTY_NOTICES. `Snap7 LGPLv3`, `open62541 MPLv2`; dağıtım yükümlülükleri incelenmeden lisans uygunluğu iddia etme.
 - Non-root final runtime, read-only rootfs mümkünse, `/data` writable, no `privileged`, no `NET_ADMIN`; seccomp default, `cap_drop: ALL` (test et). Broker credentials Git'e girmez; `.env.example` yalnız placeholder.
-- Her servis SIGTERM'e yanıt verir; SQLite transaction flush, checkpoint, last runtime state save, MQTT availability offline best-effort, Snap7 stop. Crash sonrası Docker restart & recovery; client reconnect.
+- Her servis SIGTERM'e yanıt verir; TimescaleDB transaction flush, last runtime state save, MQTT availability offline best-effort, Snap7 stop. Crash sonrası Docker restart & recovery; client reconnect.
 - log: JSON structured, rotation (`max-size` 5m, `max-file` 3); normal telemetry loglama yok. RAM growth testinde toplam RSS hesabı (2 container) ve geçici peak ayrı raporla; `docker stats` cgroup cache yorumunu ve proses RSS'lerini birlikte göster.
 - Security scope: veri **gerçek üretim ortamına geri yazılamaz**; gerçek PLC IP'lerine otomatik connect/scan yok. S7 port 102 ve şifresiz MQTT/OPC UA None internete açık bırakılmayacak. Admin kapalı default. Hız sınırlama, input validation, minimal dependency.
 
@@ -305,7 +307,7 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 │   └── s7_map.md                   # DB tabloları, dış istemci örnekleri
 ├── src/
 │   ├── main.cpp, config.*, core/{engine,clock,random,machine,job,program,tool,fault,quality}.*
-│   ├── adapters/{s7_server,opcua_server,mqtt_publisher,sqlite_store,http_server}.*
+│   ├── adapters/{s7_server,opcua_server,mqtt_publisher,timescale_store,http_server}.*
 │   ├── transport/{snapshot,contract,serializer}.*
 │   └── ui/{index.html,style.css,app.js}
 ├── tests/
@@ -331,7 +333,7 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 - **Clock:** wall-time ileri/geri alınırsa engine hızlanmaz/yavaşlamaz; only `steady_clock` ilerletir. UTC timestamp geriye atlarsa event ve kalite mesajı. Reboot'ta uzun gap geçmişi doldurulmaz; restart event'i eklenir.
 - **PRNG:** config seed ve state persist, aynı seed/program dizisi/fake clock ile golden-scenario replay deterministik. Üç protokolün publish sırası PRNG state'i etkilememeli.
 - **Yük artışı:** 3 S7 + 3 UA + 3 MQTT subscribers hedef, max S7=8, UA=10, broker client limit=25; HTTP query limit. Fazla client resource exhaustion olmadan reddedilir.
-- **SQLite:** disk dolu/readonly durumunda engine çalışabilir, telemetry ve latest durumu devam; DB health false + alarm/log, disk dönünce yeni samples yaz, tarihsel uydurma yapma. `SQLITE_BUSY` retry bounded.
+- **TimescaleDB:** disk dolu/readonly durumunda engine çalışabilir, telemetry ve latest durumu devam; DB health false + alarm/log, disk dönünce yeni samples yaz, tarihsel uydurma yapma. Bağlantı/query retry bounded; statement/lock timeout.
 - **MQTT broker down:** engine/S7/OPC UA/DB devam, backoff reconnect, availability stale/offline, tekrar bağlanınca state/tools retained güncellenir.
 - **S7 client writes:** dışarıdan counter/tool wear yazmak gerçek model durumunu değiştiremez; test bunu kanıtlar; server side DB bytes'ı da anlık manipülasyonla sahte göstermenin önüne geçmek için callback engeli veya memory refresh + doc risk.
 - **Alarmlar:** alarm bitişinde seviyesi ve süresi gerçeğe uygun kapanır; `alarm_acknowledged=0` aktif alarma bağlanır; warning vs stop ayrımı; düzeltmeden doğrudan RUNNING'e dönme.
@@ -353,9 +355,9 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 | T08 | iş emri bitişi | counters invariant, yeni job + setup, program id ilerlemesi |
 | T09 | kalıcılık | compose restart sonrası wear, energy, counters, active workorder korunur, incomplete piece sayılmaz |
 | T10 | 24h retention fake clock | 24h dışındaki event/telemetry yok, runtime state bozulmaz; 24h+60s temizlik |
-| T11 | SQLite geçmiş | 5s örnekleme, olaylar ayrı; history API valid + limit |
+| T11 | TimescaleDB geçmiş | 5s örnekleme, olaylar ayrı; history API valid + limit |
 | T12 | MQTT broker restart | publisher reconnect, retained state/tools/online, S7/UA/DB devam |
-| T13 | live 24h soak | tüm sistem RSS ≤100MiB hedef, 24h crash yok, sürekli RSS trendi/leak yok |
+| T13 | live 24h soak | simülatör+broker RSS ≤100MiB hedef; TimescaleDB ve üç servis toplamı ayrıca raporlanır, 24h crash yok, sürekli RSS trendi/leak yok |
 | T14 | CPU idle/live | 1 vCPU hostta 5dk ortalama ≤5% CPU *hedef*, ölçümle rapor |
 | T15 | kötü JSON/HTTP + admin yok | auth, validation, rate-limit, no crashes; external admin kapalı |
 | T16 | Sensör fiziksel tutarlılık | CUT→spindle ON, kapı kapalı, feed>0; E-stop→feed 0; counters tutarlı |
@@ -376,7 +378,7 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 - **Skills:** `.claude/skills/industrial-test/SKILL.md` yalnız entegrasyon / kabul durumunda kullan. Rule/hook'lar her tool edit sonrası derleme başlatmaz (token, süre, gereksiz yük); `Stop`/manuel `scripts/test-all.sh` kullanılabilir.
 - **Hooks:** `.claude/settings.json` ve `.claude/hooks/preflight.sh` sadece tahrip edici shell komutları için güvenlik kontrolü; default no-op/hook must not prevent normal work; `Stop` hook çok ağır testleri otomatik tekrar tekrar çalıştırmaz. Gerçek sürümün hook API'sine göre doğrula.
 - **MCP / graph indexing:** boş repo için Graphify benzeri kod indeksleme gerekmez; büyük repo oluşunca bile ölçülmüş token kazancı yoksa kurma. Ajanın kaynak okuma sınırları `rg` + dosya yolu + test raporu. Ağda arama yalnız gerçekten bloklanan API/dep doğrulamak için.
-- **Agent iş sırası** (faz değil, bağımlılık mantığı): sözleşme/konfigürasyon → engine/clock/programs/tools → SQLite → MQTT → S7 → OPC UA → HTTP/UI → compose → entegrasyon ve soak. Her adımda mini unit test, sonuçta *tek* çalışır dağıtım. Bu sıra proje teslimatını parçalamaz.
+- **Agent iş sırası** (faz değil, bağımlılık mantığı): sözleşme/konfigürasyon → engine/clock/programs/tools → TimescaleDB → MQTT → S7 → OPC UA → HTTP/UI → compose → entegrasyon ve soak. Her adımda mini unit test, sonuçta *tek* çalışır dağıtım. Bu sıra proje teslimatını parçalamaz.
 - **Kendini denetle:** bir kütüphane çalışmadığında gerçeğe aykırı yeşil test üretme; kolay diye Python production'a dönme; 100MiB hedefi gerçek ölçümle sağlanamıyorsa açık BLOCKER ve alternatif (daha düşük UA features / sampling / node sayısı) raporla, gereksinimi sessizce değiştirme.
 
 ## 15. KAYNAKLAR, SINIRLAR VE GERÇEKLİK KONTROLÜ
@@ -388,7 +390,7 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 5. open62541 resmi site ve lisans: https://open62541.org/download/ — C server, MPLv2. Projede sürüm pinlenerek API doğrulanmalı.
 6. OPC UA Machine Tools companion specification: https://reference.opcfoundation.org/specs/OPC-40501-1/full — özellikle Job ve ToolLife semantiği. V1 kendi namespace'i ile çalışır, conformance iddiası yok.
 7. Eclipse Mosquitto auth: https://mosquitto.org/documentation/authentication-methods/ — ACL/parola; gerçek broker gerekir.
-8. SQLite WAL: https://sqlite.org/wal.html — WAL/checkpoint, https://www.sqlite.org/pragma.html — sync ayarları.
+8. TimescaleDB: https://www.tigerdata.com/docs/reference/timescaledb/hypertables/create_hypertable — hypertables; PostgreSQL libpq: https://www.postgresql.org/docs/17/libpq.html.
 9. MTConnect 2.5.0 doküman endeksi: https://docs.mtconnect.org/ — machining telemetri semantiği; MTConnect server V1 kapsamına alınmamıştır.
 10. Claude Code skills/agents yaklaşımı: https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more — proje dosyaları, context/bellek sınırları.
 
@@ -396,4 +398,4 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 
 ## 16. SON TESLİM TANIMI
 
-Ürün tamamlandı ancak şu koşullarda denebilir: `docker compose up -d --build` sonrası S7/OPC UA/MQTT gerçekten harici istemcilerle okunur, bir makine durmadan kendi olaylarını üretir, takım aşınması zamana yayılır, 24h SQLite geçmişi analiz edilir, UI makineyi gösterir, reboot'ta sayaçlar korunur, 24h soak ve RAM ölçümü raporludur. Her şey **test ve ölçüm kanıtıyla** sunulur. Bu dokümanın verilmesi uygulamanın veya testlerin yapılmış olduğu anlamına gelmez.
+Ürün tamamlandı ancak şu koşullarda denebilir: `docker compose up -d --build` sonrası S7/OPC UA/MQTT gerçekten harici istemcilerle okunur, bir makine durmadan kendi olaylarını üretir, takım aşınması zamana yayılır, 24h TimescaleDB geçmişi analiz edilir, UI makineyi gösterir, reboot'ta sayaçlar korunur, 24h soak ve RAM ölçümü raporludur. Her şey **test ve ölçüm kanıtıyla** sunulur. Bu dokümanın verilmesi uygulamanın veya testlerin yapılmış olduğu anlamına gelmez.

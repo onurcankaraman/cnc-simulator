@@ -1,0 +1,2 @@
+ERROR:snap7.common:b'CPU : Item not available'
+{"result": "PASS", "fields": 158, "aligned_sequences": [504, 505, 506], "db_sizes": [256, 256, 256, 128], "s7_slots": [0, 1], "s7_write": "REJECTED", "ua_write": "REJECTED", "ua_subscription_notifications": 5, "ua_security": "Basic256Sha256/SignAndEncrypt", "source_timestamp": "2026-11-02T06:41:13.815000+00:00", "mqtt_schema": 1, "http_validation": "PASS", "utc": "2026-11-02T06:41:15Z"}

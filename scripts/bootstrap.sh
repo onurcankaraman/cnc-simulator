@@ -6,7 +6,7 @@ mkdir -p secrets data mosquitto/data logs
 chmod 755 config mosquitto/config
 chmod 644 config/*.yaml mosquitto/config/acl mosquitto/config/mosquitto.conf
 [ -e .env ] || cp .env.example .env
-for name in mqtt-password observer-password admin-token; do
+for name in mqtt-password observer-password admin-token db-admin-password db-writer-password db-reader-password; do
   [ -s "secrets/$name" ] || openssl rand -hex 32 > "secrets/$name"
 done
 # Local certificates for encrypted OPC UA; URI matches the server identity.

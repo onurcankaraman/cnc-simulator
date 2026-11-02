@@ -1,6 +1,8 @@
 services:
   cnc-simulator:
-    build: .
+    build:
+      context: .
+      target: runtime
     image: cnc-simulator:1.0
     restart: unless-stopped
     init: true
@@ -12,6 +14,8 @@ services:
       - "${BIND_IP:-127.0.0.1}:4840:4840"
       - "${BIND_IP:-127.0.0.1}:8080:8080"
     environment:
+      DATABASE_URL: host=timescaledb dbname=cnc user=cnc_writer
+      DATABASE_PASSWORD_FILE: /run/secrets/db-writer-password
       MQTT_PASSWORD_FILE: /run/secrets/mqtt-password
       ALLOW_INSECURE_OPCUA: "${ALLOW_INSECURE_OPCUA:-false}"
       ENABLE_ADMIN: "${ENABLE_ADMIN:-false}"
@@ -20,7 +24,7 @@ services:
       OPCUA_KEY: /run/secrets/server-key.der
       OPCUA_CLIENT_CERT: /run/secrets/client.der
     volumes:
-      - ./data:/data
+      - ./secrets/db-writer-password:/run/secrets/db-writer-password:ro
       - ./config:/app/config:ro
       - ./secrets/mqtt-password:/run/secrets/mqtt-password:ro
       - ./secrets/admin-token:/run/secrets/admin-token:ro
@@ -28,6 +32,8 @@ services:
       - ./secrets/server-key.der:/run/secrets/server-key.der:ro
       - ./secrets/client.der:/run/secrets/client.der:ro
     depends_on:
+      timescaledb:
+        condition: service_healthy
       mqtt-broker:
         condition: service_healthy
     healthcheck:
@@ -59,6 +65,34 @@ services:
       retries: 5
     networks: [simulation]
     logging: *logging
+  timescaledb:
+    image: timescale/timescaledb:latest-pg17@sha256:b56a3f51991df1f79d0c1a0841cad5c5fa8058fdd6a3ee6886394a6d4c174538
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: cnc
+      POSTGRES_PASSWORD_FILE: /run/secrets/db-admin-password
+      TIMESCALEDB_TELEMETRY: "off"
+      NO_TS_TUNE: "true"
+      POSTGRES_INITDB_ARGS: --auth-host=scram-sha-256
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-15432}:5432"
+    volumes:
+      - timescale-data:/var/lib/postgresql/data
+      - ./timescaledb/init:/docker-entrypoint-initdb.d:ro
+      - ./secrets/db-admin-password:/run/secrets/db-admin-password:ro
+      - ./secrets/db-writer-password:/run/secrets/db-writer-password:ro
+      - ./secrets/db-reader-password:/run/secrets/db-reader-password:ro
+    command: [postgres, -c, shared_buffers=32MB, -c, max_connections=20, -c, work_mem=2MB, -c, maintenance_work_mem=16MB, -c, timescaledb.max_background_workers=4, -c, timescaledb.telemetry_level=off]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d cnc"]
+      interval: 5s
+      timeout: 4s
+      retries: 20
+    networks: [simulation]
+    logging: *logging
 networks:
   simulation:
     driver: bridge
+volumes:
+  timescale-data:

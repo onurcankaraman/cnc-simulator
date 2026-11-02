@@ -65,3 +65,33 @@ Admin is **disabled by default** (404). To test it, set `ENABLE_ADMIN=true`; the
 | `/admin/trigger-workorder` | `{}`; machine must be idle/stopped and fault-free |
 
 Acknowledgement does not bypass physical recovery. Internal synthetic operator recovery is timed; feed hold resumes, severe faults discard unfinished work. Do not expose admin on a public interface. Rotate credentials by replacing ignored secret files, rerunning bootstrap to regenerate broker password hashes, and recreating the services.
+
+
+## Direct PostgreSQL / TimescaleDB (local)
+
+DBeaver, DataGrip, pgAdmin or psql: host `127.0.0.1`, port `15432`, database `cnc`, username `cnc_reader`. Read its generated password from `secrets/db-reader-password`. Local Docker transport uses PostgreSQL SCRAM password authentication, without TLS; it is bound only to loopback. For a later remote deployment use an SSH tunnel or configure verified PostgreSQL TLS; do not expose this port publicly. `POSTGRES_PORT` changes the host port only.
+
+```sh
+cat secrets/db-reader-password
+psql -h 127.0.0.1 -p 15432 -U cnc_reader -d cnc -W
+```
+
+```sql
+SELECT to_timestamp(ts_ms / 1000.0) AS time, spindle_rpm, load_pct, wear_pct
+FROM telemetry
+WHERE ts_ms >= (extract(epoch FROM now()) * 1000)::bigint - 86400000
+ORDER BY ts_ms DESC LIMIT 100;
+SELECT payload_json->'data' FROM telemetry ORDER BY ts_ms DESC LIMIT 1;
+SELECT * FROM events ORDER BY ts_ms DESC LIMIT 100;
+SELECT * FROM orders ORDER BY order_id DESC;
+```
+
+`cnc_reader` can SELECT telemetry/events/orders, cannot write or read private runtime checkpoints. The app uses `cnc_writer`; its password is `secrets/db-writer-password`. Administrative database user `postgres` uses `secrets/db-admin-password`, not the server SSH password. Do not share the admin or writer credentials for normal developer access. Secrets are generated only on bootstrap; changing the files after database initialization does not rotate PostgreSQL passwords.
+
+Telemetry/events retain 24 hours with up to 60 seconds cleanup delay. Runtime state and active orders survive cleanup and container restart. Data is held in the `timescale-data` volume. Backup using PostgreSQL tools:
+
+```sh
+docker compose exec -T timescaledb pg_dump -U postgres -d cnc -Fc > cnc-backup.dump
+```
+
+Keep backup files private. SQLite files from the previous version are not read or automatically imported. Production is still on the previous deployment until an explicit, tested cutover.

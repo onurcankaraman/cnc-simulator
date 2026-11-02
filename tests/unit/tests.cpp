@@ -1,4 +1,6 @@
-#include "adapters/sqlite_store.hpp"
+#include "adapters/timescale_store.hpp"
+#include <fstream>
+#include <cstdlib>
 #include "core/engine.hpp"
 #include <cmath>
 #include <cstdio>
@@ -163,8 +165,10 @@ int main() {
       }
     }
     check(thresholds.size() == 3, "80/95/100 wear threshold events");
-    std::remove("/tmp/cnc-unit.sqlite");
-    Store db("/tmp/cnc-unit.sqlite");
+
+    std::ifstream secret(env("CNC_TEST_DATABASE_PASSWORD_FILE"));
+    std::string password; secret >> password;
+    Store db(env("CNC_TEST_DATABASE_URL"), password);
     auto s = a.snapshot();
     Json retained_events = Json::array({{{"event_id", 900000},
                                          {"ts_ms", s.ts_ms},
@@ -174,6 +178,22 @@ int main() {
                                          {"state_from", 10},
                                          {"state_to", 20}}});
     check(db.write(s, a.save(), retained_events, a.order(), true), "SQL write");
+    // A late statement failure must roll back earlier event insertion and runtime state.
+    const char *keys[] = {"dbname", "password", nullptr};
+    auto dsn = env("CNC_TEST_DATABASE_URL");
+    const char *values[] = {dsn.c_str(), password.c_str(), nullptr};
+    auto connection = PQconnectdbParams(keys, values, 1);
+    auto result = PQexec(connection, "ALTER TABLE telemetry ADD CONSTRAINT test_reject CHECK(seq <> 4294967295)");
+    check(PQresultStatus(result) == PGRES_COMMAND_OK, "failure fixture constraint");
+    PQclear(result);
+    auto rejected = s; rejected.ts_ms += 1; rejected.sequence = 4294967295;
+    auto rejected_events = retained_events; rejected_events[0]["event_id"] = 900001;
+    auto checkpoint = db.restore();
+    check(!db.write(rejected, {{"invalid", true}}, rejected_events, a.order(), true), "SQL failure detected");
+    check(db.restore() == checkpoint && db.events(0, 10).size() == 1, "atomic rollback preserves checkpoint/events");
+    result = PQexec(connection, "ALTER TABLE telemetry DROP CONSTRAINT test_reject");
+    check(PQresultStatus(result) == PGRES_COMMAND_OK, "remove failure fixture");
+    PQclear(result); PQfinish(connection);
     auto completed_order = a.order();
     completed_order["order_id"] = 99999;
     completed_order["status"] = "completed";

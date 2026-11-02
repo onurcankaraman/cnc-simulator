@@ -1,3 +1,38 @@
+# TimescaleDB local verification — 2026-11-02 (Europe/Istanbul)
+
+SQLite production storage has been replaced with C++ libpq + TimescaleDB **2.31.0 / PostgreSQL 17.11**, image pinned by digest in Compose. Three local containers are healthy. Production server was not modified. Existing SQLite files remain untouched; this local database starts fresh, with no automatic import of old counters/history. **24h soak = NOT RUN.**
+
+Environment: macOS host, Docker Desktop Linux arm64, GCC 12/C++17; libpq **15.19-0+deb12u1**; Python 3.12 independent psycopg **3.2.6**, Snap7, asyncua and Paho clients. [Runtime packages](evidence/timescale-packages.txt). Historical SQLite tests below do not establish TimescaleDB acceptance.
+
+| Actual command | Result |
+|---|---|
+| `./scripts/bootstrap.sh` | PASS — generated separate ignored admin/writer/reader database credentials |
+| `docker compose up -d --build --wait --wait-timeout 180` | PASS — real C++ runtime, Mosquitto and TimescaleDB; PostgreSQL host port 15432 avoids existing local 5432 service |
+| `./scripts/test-all.sh` | PASS — [full log](evidence/timescale-tests.log) |
+| CTest `deterministic` (real isolated `cnc_test` database) | PASS, 25.57 s — model invariants, restart states, wear/fault paths, retention and failed-transaction rollback preserving both checkpoint and events |
+| CTest `bounded_history` | PASS, 6.24 s — 5,000-row cursor streaming; test enforces process peak RSS <=40,000 KiB and fetch chunk <=131,072 bytes |
+| Independent S7 / encrypted OPC UA / MQTT | PASS — all 158 CSV fields at sequences 266,267,268; sizes 256/256/256/128, reads/subscriptions; writes rejected |
+| `.venv312/bin/python tests/integration/timescale.py` | PASS — [SQL log](evidence/timescale-sql.log); real PostgreSQL TCP auth; all 158 persisted fields equal independent MQTT payload; reader cannot DELETE or read private runtime state; two hypertables; exact retention boundary; manual invocation of actual scheduled cleanup job deletes expired live fixture |
+| `tests/integration/security.py` | PASS — anonymous MQTT / OPC None rejected; observer publishing denied |
+| `tests/e2e/recovery.py` | PASS — counts, 12 tool wear values, order and energy survive restart; engine continues through broker and DB stop/start; reconnect records sample_gap |
+| `tests/e2e/database_write_failure.py` | PASS — actual revoked SQL write privilege makes health false; engine progresses, checkpoint stays unchanged; grants restored in finally, persistence recovers |
+| `tests/e2e/admin.py` | PASS — isolated test runtime/database; authentication, bad requests, rate limiting, E-stop and SQL audit |
+| `./scripts/soak.sh 60` | Short run PASS — **60.22 seconds**, not a 24h soak |
+
+The final Docker rebuild also includes a strict 256-event backlog guard and defaults to the runtime build stage. `scripts/smoke-connectors.sh` passed against that delivered image at sequences **504,505,506** ([log](evidence/timescale-final-connectors.log)); the 60-second resource sample below was taken on this final image.
+
+The SQL retention test places samples just before, exactly at and after a fake 24-hour cutoff: only the first is deleted; runtime checkpoint and active order survive. The database background job is scheduled every minute and does not depend on the simulator running. Cleanup drops whole expired chunks and deletes the expired portion of the boundary chunk. Samples are not backfilled.
+
+Three S7 + three encrypted OPC UA + three MQTT clients were active during the short resource run. [CSV](evidence/timescale-resources-60s.csv), [summary](evidence/timescale-resources-60s.json), [client log](evidence/timescale-load.log), [measured image](evidence/timescale-measured-image.txt). Sampled simulator+broker peak RSS **24.523 MiB**; PostgreSQL process RSS sum peak **122.363 MiB**; full stack process RSS sum peak **146.887 MiB**. PostgreSQL shared pages are counted in multiple processes, so the latter is not unique physical memory. The original simulator+broker ≤100 MiB target passes only this short sample; **1h / 24h acceptance NOT RUN**. Full-stack RSS is explicitly reported rather than hidden in the two-process figure. UA clients emit hostname diagnostics for the local test certificate and BadNoSubscription responses during teardown; encrypted sessions and reads succeeded.
+
+Remaining scope: PostgreSQL-specific ENOSPC, long network blackhole, 24-hour loaded memory/liveness and production cutover/data migration are **NOT RUN**. The old SQLite tmpfs ENOSPC test was replaced by a correctly named SQL write-permission failure test; these failures are not claimed equivalent. CI workflow was updated, but remote CI for this branch is **NOT RUN** (local-only request).
+
+Implementation references: [Timescale hypertables](https://www.tigerdata.com/docs/reference/timescaledb/hypertables/create_hypertable), [retention/chunk behavior](https://www.tigerdata.com/docs/reference/timescaledb/data-retention/add_retention_policy). Exact 24h row trimming is implemented by our cleanup function in addition to chunk removal.
+
+---
+
+## Historical SQLite implementation evidence (before migration)
+
 # Actual verification report — 2026-11-01
 
 **Implementation runs; full 24-hour acceptance is pending. 24h soak = NOT RUN.** No fake-clock run below is a live soak. No 24-hour RAM guarantee is inferred from a short measurement.

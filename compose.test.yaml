@@ -1,0 +1,12 @@
+services:
+  tests:
+    build:
+      context: .
+      target: test
+    environment:
+      CNC_TEST_DATABASE_URL: host=timescaledb dbname=cnc_test user=postgres
+      CNC_TEST_DATABASE_PASSWORD_FILE: /run/secrets/db-admin-password
+    volumes:
+      - ./secrets/db-admin-password:/run/secrets/db-admin-password:ro
+    networks: [simulation]
+    profiles: [test]

@@ -2,5 +2,10 @@
 set -eu
 cd "$(dirname "$0")/.."
 python3 scripts/generate-contract.py
-docker run --rm -v "$PWD:/app" -w /app cnc-dependencies sh -c 'cmake -S . -B build -G Ninja && cmake --build build -j2 && ctest --test-dir build --output-on-failure && build/stream-memory && cp /tmp/cnc-traces.csv logs/synthetic-traces.csv'
+scripts/test-database.sh
 scripts/smoke-connectors.sh
+${TEST_PYTHON:-.venv312/bin/python} tests/integration/timescale.py
+${TEST_PYTHON:-.venv312/bin/python} tests/integration/security.py
+${TEST_PYTHON:-.venv312/bin/python} tests/e2e/recovery.py
+${TEST_PYTHON:-.venv312/bin/python} tests/e2e/database_write_failure.py
+${TEST_PYTHON:-.venv312/bin/python} tests/e2e/admin.py
