@@ -1,3 +1,15 @@
+# Longer tool runs and synthetic NC context — 2026-11-02
+
+Actual local commands: `docker compose build cnc-simulator`, additive migration with `docker compose exec -T timescaledb psql -v ON_ERROR_STOP=1 -U postgres -d cnc < timescaledb/migrations/002-nc-context.sql`, targeted `docker compose up -d --no-deps --wait cnc-simulator`, then `scripts/test-all.sh`. **PASS** ([full integration output](evidence/long-program-integration.log)). All three CTest cases passed in 90.60 seconds, including 1,000 completed accelerated cycles, deterministic replay, restart/fault/wear/production/energy invariants and bounded SQL history. A preliminary standalone CTest run used an old disposable database schema and failed SQL inserts; the standard test script recreated `cnc_test` with the new schema and all tests passed.
+
+Focused command: `docker compose -f compose.yaml -f compose.test.yaml run --rm tests -R long_programs -V` ([output](evidence/long-program-model.log)). Two completed fault-free parts per program each produced four actual tool changes. Minimum observed change-to-change intervals: P1001 **408.4 s**, P1002 **408.8 s**, P1003 **400.4 s**, P1004 **331.0 s**. Nominal cycles: 914.14, 970.88, 939.70, 719.54 seconds respectively. These are fake-clock model results, not real-time factory measurements. The test also checks noncutting/no-wear drill rapid moves, actual feed/axis velocity consistency, old checkpoint preservation, revision refresh, same-tool change skip and invalid path rejection.
+
+Independent Snap7/asyncua/Paho clients matched all 158 fields at sequences 31846–31848; encrypted UA subscriptions and write rejection passed. New HTTP/MQTT context matched at sequence 31857 and SQL/MQTT at 31855. SQL retention, reader permissions, restart persistence, broker/database outages, denied-write recovery and admin interlocks passed. Existing CSV/S7/OPC/telemetry schema files are unchanged. Dashboard program panel and expanded G-code listing were inspected in a real browser.
+
+Actual loaded short-run command: `scripts/soak.sh 60`: 60.19 seconds, seven RSS samples, simulator+broker peak **27.918 MiB**. PostgreSQL process RSS sum peaked at 116.547 MiB (shared pages counted repeatedly); full process sum 144.465 MiB. This is not a 24-hour memory guarantee. [Measurement](evidence/long-program-resources.json). Production deployment evidence will be recorded after the live upgrade. **24h soak = NOT RUN**. Earlier sections are historical results for previous revisions.
+
+---
+
 # Public demo SQL verification — 2026-11-02
 
 At the owner's explicit request, `cnc.digitheta.dev:5432` now exposes only the `cnc_demo` account through mandatory PostgreSQL TLS. Credentials are not committed. The server's production override/HBA configuration remains private; default local Compose networking is unchanged.

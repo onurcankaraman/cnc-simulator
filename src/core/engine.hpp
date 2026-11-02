@@ -13,6 +13,10 @@ class Engine {
          cycle_scale_ = 1;
   int64_t now_ = 0, prev_wall_ = 0, shift_key_ = -1, order_started_ = 0;
   double fault_elapsed_ = 0, fault_duration_ = 0;
+  size_t path_point_ = 0;
+  bool path_done_ = true;
+  Json active_nc_;
+  double tool_cutting_s_ = 0;
   std::string profile_ = "normal";
   double random();
   void transition(int next, int reason = 0);
@@ -32,6 +36,7 @@ public:
   void restore(const Json &state, int64_t now);
   Json take_events();
   Json order() const;
+  Json program_catalog() const;
   void command(const std::string &action, const Json &body);
   void audit(const std::string &action) {
     event("admin_command", 0, 0, {{"action", action}});

@@ -1,64 +1,660 @@
-schema_version: 1
+# Synthetic operation model and illustrative G-code; never send to a real machine.
+schema_version: 2
 programs:
-  - id: 1001
-    name: ALU_BRACKET_P1001
-    part_id: 501
-    material: aluminum_6061
-    nominal_cycle_seconds: 102
-    segments:
-      - {step: LOAD,       duration_s: 12,  tool_id: 0, rpm: 0,    feed_mm_min: 0,    load_pct: 0,  target_xyz_mm: [80,100,250], coolant: false}
-      - {step: TOOL_SWAP,  duration_s: 5,   tool_id: 1, rpm: 0,    feed_mm_min: 0,    load_pct: 0,  target_xyz_mm: [80,100,250], coolant: false}
-      - {step: RAPID,      duration_s: 5,   tool_id: 1, rpm: 4700, feed_mm_min: 6000, load_pct: 5,  target_xyz_mm: [130,105,45], coolant: true}
-      - {step: CUT,        duration_s: 26,  tool_id: 1, rpm: 4700, feed_mm_min: 1050, load_pct: 61, target_xyz_mm: [440,105,40], coolant: true}
-      - {step: TOOL_SWAP,  duration_s: 5,   tool_id: 3, rpm: 0,    feed_mm_min: 0,    load_pct: 0,  target_xyz_mm: [440,105,180], coolant: false}
-      - {step: CUT,        duration_s: 23,  tool_id: 3, rpm: 6200, feed_mm_min: 840,  load_pct: 55, target_xyz_mm: [220,260,42], coolant: true}
-      - {step: TOOL_SWAP,  duration_s: 5,   tool_id: 5, rpm: 0,    feed_mm_min: 0,    load_pct: 0,  target_xyz_mm: [220,260,180], coolant: false}
-      - {step: DRILL,      duration_s: 11,  tool_id: 5, rpm: 3100, feed_mm_min: 290,  load_pct: 72, target_xyz_mm: [235,265,38], coolant: true}
-      - {step: UNLOAD,     duration_s: 8,   tool_id: 0, rpm: 0,    feed_mm_min: 0,    load_pct: 0,  target_xyz_mm: [235,265,250], coolant: false}
-      - {step: INSPECT,    duration_s: 2,   tool_id: 0, rpm: 0,    feed_mm_min: 0,    load_pct: 0,  target_xyz_mm: [235,265,250], coolant: false}
-  - id: 1002
-    name: STEEL_FLANGE_P1002
-    part_id: 502
-    material: steel_1045
-    nominal_cycle_seconds: 165
-    segments:
-      - {step: LOAD,      duration_s: 18, tool_id: 0, rpm: 0,    feed_mm_min: 0,   load_pct: 0,  target_xyz_mm: [90,90,280], coolant: false}
-      - {step: TOOL_SWAP, duration_s: 6,  tool_id: 2, rpm: 0,    feed_mm_min: 0,   load_pct: 0,  target_xyz_mm: [90,90,280], coolant: false}
-      - {step: RAPID,     duration_s: 8,  tool_id: 2, rpm: 2400, feed_mm_min: 6000,load_pct: 5,  target_xyz_mm: [200,140,90], coolant: true}
-      - {step: CUT,       duration_s: 60, tool_id: 2, rpm: 2400, feed_mm_min: 480, load_pct: 76, target_xyz_mm: [440,140,60], coolant: true}
-      - {step: TOOL_SWAP, duration_s: 6,  tool_id: 4, rpm: 0,    feed_mm_min: 0,   load_pct: 0,  target_xyz_mm: [440,140,240], coolant: false}
-      - {step: CUT,       duration_s: 42, tool_id: 4, rpm: 3200, feed_mm_min: 380, load_pct: 66, target_xyz_mm: [295,280,63], coolant: true}
-      - {step: TOOL_SWAP, duration_s: 6,  tool_id: 5, rpm: 0,    feed_mm_min: 0,   load_pct: 0,  target_xyz_mm: [295,280,230], coolant: false}
-      - {step: DRILL,     duration_s: 10, tool_id: 5, rpm: 1800, feed_mm_min: 200, load_pct: 82, target_xyz_mm: [305,280,50], coolant: true}
-      - {step: UNLOAD,    duration_s: 7,  tool_id: 0, rpm: 0,    feed_mm_min: 0,   load_pct: 0,  target_xyz_mm: [305,280,280], coolant: false}
-      - {step: INSPECT,   duration_s: 2,  tool_id: 0, rpm: 0,    feed_mm_min: 0,   load_pct: 0,  target_xyz_mm: [305,280,280], coolant: false}
-  - id: 1003
-    name: ALU_VALVE_P1003
-    part_id: 503
-    material: aluminum_6061
-    nominal_cycle_seconds: 126
-    segments:
-      - {step: LOAD,      duration_s: 13, tool_id: 0, rpm: 0,    feed_mm_min: 0,    load_pct: 0, target_xyz_mm: [110,100,280], coolant: false}
-      - {step: TOOL_SWAP, duration_s: 5,  tool_id: 1, rpm: 0,    feed_mm_min: 0,    load_pct: 0, target_xyz_mm: [110,100,280], coolant: false}
-      - {step: RAPID,     duration_s: 6,  tool_id: 1, rpm: 4500, feed_mm_min: 6000, load_pct: 4, target_xyz_mm: [150,120,70], coolant: true}
-      - {step: CUT,       duration_s: 43, tool_id: 1, rpm: 4500, feed_mm_min: 950,  load_pct: 64,target_xyz_mm: [390,205,40], coolant: true}
-      - {step: TOOL_SWAP, duration_s: 5,  tool_id: 3, rpm: 0,    feed_mm_min: 0,    load_pct: 0, target_xyz_mm: [390,205,230], coolant: false}
-      - {step: CUT,       duration_s: 26, tool_id: 3, rpm: 5700, feed_mm_min: 770,  load_pct: 58,target_xyz_mm: [215,270,45], coolant: true}
-      - {step: TOOL_SWAP, duration_s: 5,  tool_id: 6, rpm: 0,    feed_mm_min: 0,    load_pct: 0, target_xyz_mm: [215,270,230], coolant: false}
-      - {step: DRILL,     duration_s: 12, tool_id: 6, rpm: 2800, feed_mm_min: 250,  load_pct: 71,target_xyz_mm: [230,265,28], coolant: true}
-      - {step: UNLOAD,    duration_s: 9,  tool_id: 0, rpm: 0,    feed_mm_min: 0,    load_pct: 0, target_xyz_mm: [230,265,260], coolant: false}
-      - {step: INSPECT,   duration_s: 2,  tool_id: 0, rpm: 0,    feed_mm_min: 0,    load_pct: 0, target_xyz_mm: [230,265,260], coolant: false}
-  - id: 1004
-    name: BRASS_FITTING_P1004
-    part_id: 504
-    material: brass_C360
-    nominal_cycle_seconds: 81
-    segments:
-      - {step: LOAD,      duration_s: 9,  tool_id: 0, rpm: 0,    feed_mm_min: 0,   load_pct: 0, target_xyz_mm: [80,90,280], coolant: false}
-      - {step: TOOL_SWAP, duration_s: 5,  tool_id: 7, rpm: 0,    feed_mm_min: 0,   load_pct: 0, target_xyz_mm: [80,90,280], coolant: false}
-      - {step: RAPID,     duration_s: 4,  tool_id: 7, rpm: 4900, feed_mm_min: 6500,load_pct: 3, target_xyz_mm: [140,125,55], coolant: true}
-      - {step: CUT,       duration_s: 32, tool_id: 7, rpm: 4900, feed_mm_min: 900, load_pct: 46,target_xyz_mm: [375,125,39], coolant: true}
-      - {step: TOOL_SWAP, duration_s: 5,  tool_id: 8, rpm: 0,    feed_mm_min: 0,   load_pct: 0, target_xyz_mm: [375,125,260], coolant: false}
-      - {step: DRILL,     duration_s: 17, tool_id: 8, rpm: 3800, feed_mm_min: 350, load_pct: 53,target_xyz_mm: [275,230,28], coolant: true}
-      - {step: UNLOAD,    duration_s: 7,  tool_id: 0, rpm: 0,    feed_mm_min: 0,   load_pct: 0, target_xyz_mm: [275,230,280], coolant: false}
-      - {step: INSPECT,   duration_s: 2,  tool_id: 0, rpm: 0,    feed_mm_min: 0,   load_pct: 0, target_xyz_mm: [275,230,280], coolant: false}
+- id: 1001
+  name: ALU_BRACKET_P1001
+  revision: 2
+  part_id: 501
+  material: aluminum_6061
+  nominal_cycle_seconds: 914.14
+  segments:
+  - {step: LOAD, duration_s: 18, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Load and clamp
+      workpiece}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 3, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Load milling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 3, rpm: 6000, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [140, 100, 40], coolant: true, operation: Position
+      for milling}
+  - step: CUT
+    duration_s: 360.0
+    tool_id: 3
+    rpm: 6000
+    feed_mm_min: 900
+    load_pct: 65
+    target_xyz_mm: [140, 100, 40]
+    coolant: true
+    operation: Continuous rough milling
+    start_xyz_mm: [140, 100, 40]
+    path:
+    - {xyz: [440, 100, 40], mode: CUT}
+    - {xyz: [440, 250, 40], mode: CUT}
+    - {xyz: [140, 250, 40], mode: CUT}
+    - {xyz: [140, 100, 40], mode: CUT}
+    repeat: 6
+  - step: CUT
+    duration_s: 150.0
+    tool_id: 3
+    rpm: 6000
+    feed_mm_min: 720
+    load_pct: 48
+    target_xyz_mm: [140, 100, 40]
+    coolant: true
+    operation: Finish with same tool
+    start_xyz_mm: [140, 100, 40]
+    path:
+    - {xyz: [440, 100, 40], mode: CUT}
+    - {xyz: [440, 250, 40], mode: CUT}
+    - {xyz: [140, 250, 40], mode: CUT}
+    - {xyz: [140, 100, 40], mode: CUT}
+    repeat: 2
+  - {step: RAPID, duration_s: 5, tool_id: 3, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Retract
+      before tool change}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 5, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Load drilling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 5, rpm: 3100, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [140, 100, 60], coolant: true, operation: Position
+      for hole array}
+  - step: DRILL
+    duration_s: 316.14
+    tool_id: 5
+    rpm: 3100
+    feed_mm_min: 180
+    load_pct: 70
+    target_xyz_mm: [140.0, 250.0, 60]
+    coolant: true
+    operation: Drill 36 holes without tool changes
+    start_xyz_mm: [140, 100, 60]
+    path:
+    - {xyz: [140.0, 100.0, 60], mode: RAPID}
+    - {xyz: [140.0, 100.0, 36], mode: DRILL}
+    - {xyz: [140.0, 100.0, 60], mode: RAPID}
+    - {xyz: [200.0, 100.0, 60], mode: RAPID}
+    - {xyz: [200.0, 100.0, 36], mode: DRILL}
+    - {xyz: [200.0, 100.0, 60], mode: RAPID}
+    - {xyz: [260.0, 100.0, 60], mode: RAPID}
+    - {xyz: [260.0, 100.0, 36], mode: DRILL}
+    - {xyz: [260.0, 100.0, 60], mode: RAPID}
+    - {xyz: [320.0, 100.0, 60], mode: RAPID}
+    - {xyz: [320.0, 100.0, 36], mode: DRILL}
+    - {xyz: [320.0, 100.0, 60], mode: RAPID}
+    - {xyz: [380.0, 100.0, 60], mode: RAPID}
+    - {xyz: [380.0, 100.0, 36], mode: DRILL}
+    - {xyz: [380.0, 100.0, 60], mode: RAPID}
+    - {xyz: [440.0, 100.0, 60], mode: RAPID}
+    - {xyz: [440.0, 100.0, 36], mode: DRILL}
+    - {xyz: [440.0, 100.0, 60], mode: RAPID}
+    - {xyz: [440.0, 130.0, 60], mode: RAPID}
+    - {xyz: [440.0, 130.0, 36], mode: DRILL}
+    - {xyz: [440.0, 130.0, 60], mode: RAPID}
+    - {xyz: [380.0, 130.0, 60], mode: RAPID}
+    - {xyz: [380.0, 130.0, 36], mode: DRILL}
+    - {xyz: [380.0, 130.0, 60], mode: RAPID}
+    - {xyz: [320.0, 130.0, 60], mode: RAPID}
+    - {xyz: [320.0, 130.0, 36], mode: DRILL}
+    - {xyz: [320.0, 130.0, 60], mode: RAPID}
+    - {xyz: [260.0, 130.0, 60], mode: RAPID}
+    - {xyz: [260.0, 130.0, 36], mode: DRILL}
+    - {xyz: [260.0, 130.0, 60], mode: RAPID}
+    - {xyz: [200.0, 130.0, 60], mode: RAPID}
+    - {xyz: [200.0, 130.0, 36], mode: DRILL}
+    - {xyz: [200.0, 130.0, 60], mode: RAPID}
+    - {xyz: [140.0, 130.0, 60], mode: RAPID}
+    - {xyz: [140.0, 130.0, 36], mode: DRILL}
+    - {xyz: [140.0, 130.0, 60], mode: RAPID}
+    - {xyz: [140.0, 160.0, 60], mode: RAPID}
+    - {xyz: [140.0, 160.0, 36], mode: DRILL}
+    - {xyz: [140.0, 160.0, 60], mode: RAPID}
+    - {xyz: [200.0, 160.0, 60], mode: RAPID}
+    - {xyz: [200.0, 160.0, 36], mode: DRILL}
+    - {xyz: [200.0, 160.0, 60], mode: RAPID}
+    - {xyz: [260.0, 160.0, 60], mode: RAPID}
+    - {xyz: [260.0, 160.0, 36], mode: DRILL}
+    - {xyz: [260.0, 160.0, 60], mode: RAPID}
+    - {xyz: [320.0, 160.0, 60], mode: RAPID}
+    - {xyz: [320.0, 160.0, 36], mode: DRILL}
+    - {xyz: [320.0, 160.0, 60], mode: RAPID}
+    - {xyz: [380.0, 160.0, 60], mode: RAPID}
+    - {xyz: [380.0, 160.0, 36], mode: DRILL}
+    - {xyz: [380.0, 160.0, 60], mode: RAPID}
+    - {xyz: [440.0, 160.0, 60], mode: RAPID}
+    - {xyz: [440.0, 160.0, 36], mode: DRILL}
+    - {xyz: [440.0, 160.0, 60], mode: RAPID}
+    - {xyz: [440.0, 190.0, 60], mode: RAPID}
+    - {xyz: [440.0, 190.0, 36], mode: DRILL}
+    - {xyz: [440.0, 190.0, 60], mode: RAPID}
+    - {xyz: [380.0, 190.0, 60], mode: RAPID}
+    - {xyz: [380.0, 190.0, 36], mode: DRILL}
+    - {xyz: [380.0, 190.0, 60], mode: RAPID}
+    - {xyz: [320.0, 190.0, 60], mode: RAPID}
+    - {xyz: [320.0, 190.0, 36], mode: DRILL}
+    - {xyz: [320.0, 190.0, 60], mode: RAPID}
+    - {xyz: [260.0, 190.0, 60], mode: RAPID}
+    - {xyz: [260.0, 190.0, 36], mode: DRILL}
+    - {xyz: [260.0, 190.0, 60], mode: RAPID}
+    - {xyz: [200.0, 190.0, 60], mode: RAPID}
+    - {xyz: [200.0, 190.0, 36], mode: DRILL}
+    - {xyz: [200.0, 190.0, 60], mode: RAPID}
+    - {xyz: [140.0, 190.0, 60], mode: RAPID}
+    - {xyz: [140.0, 190.0, 36], mode: DRILL}
+    - {xyz: [140.0, 190.0, 60], mode: RAPID}
+    - {xyz: [140.0, 220.0, 60], mode: RAPID}
+    - {xyz: [140.0, 220.0, 36], mode: DRILL}
+    - {xyz: [140.0, 220.0, 60], mode: RAPID}
+    - {xyz: [200.0, 220.0, 60], mode: RAPID}
+    - {xyz: [200.0, 220.0, 36], mode: DRILL}
+    - {xyz: [200.0, 220.0, 60], mode: RAPID}
+    - {xyz: [260.0, 220.0, 60], mode: RAPID}
+    - {xyz: [260.0, 220.0, 36], mode: DRILL}
+    - {xyz: [260.0, 220.0, 60], mode: RAPID}
+    - {xyz: [320.0, 220.0, 60], mode: RAPID}
+    - {xyz: [320.0, 220.0, 36], mode: DRILL}
+    - {xyz: [320.0, 220.0, 60], mode: RAPID}
+    - {xyz: [380.0, 220.0, 60], mode: RAPID}
+    - {xyz: [380.0, 220.0, 36], mode: DRILL}
+    - {xyz: [380.0, 220.0, 60], mode: RAPID}
+    - {xyz: [440.0, 220.0, 60], mode: RAPID}
+    - {xyz: [440.0, 220.0, 36], mode: DRILL}
+    - {xyz: [440.0, 220.0, 60], mode: RAPID}
+    - {xyz: [440.0, 250.0, 60], mode: RAPID}
+    - {xyz: [440.0, 250.0, 36], mode: DRILL}
+    - {xyz: [440.0, 250.0, 60], mode: RAPID}
+    - {xyz: [380.0, 250.0, 60], mode: RAPID}
+    - {xyz: [380.0, 250.0, 36], mode: DRILL}
+    - {xyz: [380.0, 250.0, 60], mode: RAPID}
+    - {xyz: [320.0, 250.0, 60], mode: RAPID}
+    - {xyz: [320.0, 250.0, 36], mode: DRILL}
+    - {xyz: [320.0, 250.0, 60], mode: RAPID}
+    - {xyz: [260.0, 250.0, 60], mode: RAPID}
+    - {xyz: [260.0, 250.0, 36], mode: DRILL}
+    - {xyz: [260.0, 250.0, 60], mode: RAPID}
+    - {xyz: [200.0, 250.0, 60], mode: RAPID}
+    - {xyz: [200.0, 250.0, 36], mode: DRILL}
+    - {xyz: [200.0, 250.0, 60], mode: RAPID}
+    - {xyz: [140.0, 250.0, 60], mode: RAPID}
+    - {xyz: [140.0, 250.0, 36], mode: DRILL}
+    - {xyz: [140.0, 250.0, 60], mode: RAPID}
+    repeat: 1
+  - {step: RAPID, duration_s: 5, tool_id: 5, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [140.0, 250.0, 100], coolant: false, operation: Retract
+      for unloading}
+  - {step: UNLOAD, duration_s: 12, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Unclamp and
+      unload}
+  - {step: INSPECT, duration_s: 8, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Inspect completed
+      part}
+- id: 1002
+  name: STEEL_FLANGE_P1002
+  revision: 2
+  part_id: 502
+  material: steel_1045
+  nominal_cycle_seconds: 970.884211
+  segments:
+  - {step: LOAD, duration_s: 18, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [170, 110, 100], coolant: false, operation: Load and clamp
+      workpiece}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 2, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [170, 110, 100], coolant: false, operation: Load milling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 2, rpm: 2400, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [170, 110, 40], coolant: true, operation: Position
+      for milling}
+  - step: CUT
+    duration_s: 450.0
+    tool_id: 2
+    rpm: 2400
+    feed_mm_min: 480
+    load_pct: 76
+    target_xyz_mm: [170, 110, 40]
+    coolant: true
+    operation: Continuous rough milling
+    start_xyz_mm: [170, 110, 40]
+    path:
+    - {xyz: [410, 110, 40], mode: CUT}
+    - {xyz: [410, 230, 40], mode: CUT}
+    - {xyz: [170, 230, 40], mode: CUT}
+    - {xyz: [170, 110, 40], mode: CUT}
+    repeat: 5
+  - step: CUT
+    duration_s: 113.684211
+    tool_id: 2
+    rpm: 2400
+    feed_mm_min: 380
+    load_pct: 48
+    target_xyz_mm: [170, 110, 40]
+    coolant: true
+    operation: Finish with same tool
+    start_xyz_mm: [170, 110, 40]
+    path:
+    - {xyz: [410, 110, 40], mode: CUT}
+    - {xyz: [410, 230, 40], mode: CUT}
+    - {xyz: [170, 230, 40], mode: CUT}
+    - {xyz: [170, 110, 40], mode: CUT}
+    repeat: 1
+  - {step: RAPID, duration_s: 5, tool_id: 2, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [170, 110, 100], coolant: false, operation: Retract
+      before tool change}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 5, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [170, 110, 100], coolant: false, operation: Load drilling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 5, rpm: 1800, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [170, 110, 60], coolant: true, operation: Position
+      for hole array}
+  - step: DRILL
+    duration_s: 319.2
+    tool_id: 5
+    rpm: 1800
+    feed_mm_min: 120
+    load_pct: 70
+    target_xyz_mm: [410.0, 230.0, 60]
+    coolant: true
+    operation: Drill 25 holes without tool changes
+    start_xyz_mm: [170, 110, 60]
+    path:
+    - {xyz: [170.0, 110.0, 60], mode: RAPID}
+    - {xyz: [170.0, 110.0, 36], mode: DRILL}
+    - {xyz: [170.0, 110.0, 60], mode: RAPID}
+    - {xyz: [230.0, 110.0, 60], mode: RAPID}
+    - {xyz: [230.0, 110.0, 36], mode: DRILL}
+    - {xyz: [230.0, 110.0, 60], mode: RAPID}
+    - {xyz: [290.0, 110.0, 60], mode: RAPID}
+    - {xyz: [290.0, 110.0, 36], mode: DRILL}
+    - {xyz: [290.0, 110.0, 60], mode: RAPID}
+    - {xyz: [350.0, 110.0, 60], mode: RAPID}
+    - {xyz: [350.0, 110.0, 36], mode: DRILL}
+    - {xyz: [350.0, 110.0, 60], mode: RAPID}
+    - {xyz: [410.0, 110.0, 60], mode: RAPID}
+    - {xyz: [410.0, 110.0, 36], mode: DRILL}
+    - {xyz: [410.0, 110.0, 60], mode: RAPID}
+    - {xyz: [410.0, 140.0, 60], mode: RAPID}
+    - {xyz: [410.0, 140.0, 36], mode: DRILL}
+    - {xyz: [410.0, 140.0, 60], mode: RAPID}
+    - {xyz: [350.0, 140.0, 60], mode: RAPID}
+    - {xyz: [350.0, 140.0, 36], mode: DRILL}
+    - {xyz: [350.0, 140.0, 60], mode: RAPID}
+    - {xyz: [290.0, 140.0, 60], mode: RAPID}
+    - {xyz: [290.0, 140.0, 36], mode: DRILL}
+    - {xyz: [290.0, 140.0, 60], mode: RAPID}
+    - {xyz: [230.0, 140.0, 60], mode: RAPID}
+    - {xyz: [230.0, 140.0, 36], mode: DRILL}
+    - {xyz: [230.0, 140.0, 60], mode: RAPID}
+    - {xyz: [170.0, 140.0, 60], mode: RAPID}
+    - {xyz: [170.0, 140.0, 36], mode: DRILL}
+    - {xyz: [170.0, 140.0, 60], mode: RAPID}
+    - {xyz: [170.0, 170.0, 60], mode: RAPID}
+    - {xyz: [170.0, 170.0, 36], mode: DRILL}
+    - {xyz: [170.0, 170.0, 60], mode: RAPID}
+    - {xyz: [230.0, 170.0, 60], mode: RAPID}
+    - {xyz: [230.0, 170.0, 36], mode: DRILL}
+    - {xyz: [230.0, 170.0, 60], mode: RAPID}
+    - {xyz: [290.0, 170.0, 60], mode: RAPID}
+    - {xyz: [290.0, 170.0, 36], mode: DRILL}
+    - {xyz: [290.0, 170.0, 60], mode: RAPID}
+    - {xyz: [350.0, 170.0, 60], mode: RAPID}
+    - {xyz: [350.0, 170.0, 36], mode: DRILL}
+    - {xyz: [350.0, 170.0, 60], mode: RAPID}
+    - {xyz: [410.0, 170.0, 60], mode: RAPID}
+    - {xyz: [410.0, 170.0, 36], mode: DRILL}
+    - {xyz: [410.0, 170.0, 60], mode: RAPID}
+    - {xyz: [410.0, 200.0, 60], mode: RAPID}
+    - {xyz: [410.0, 200.0, 36], mode: DRILL}
+    - {xyz: [410.0, 200.0, 60], mode: RAPID}
+    - {xyz: [350.0, 200.0, 60], mode: RAPID}
+    - {xyz: [350.0, 200.0, 36], mode: DRILL}
+    - {xyz: [350.0, 200.0, 60], mode: RAPID}
+    - {xyz: [290.0, 200.0, 60], mode: RAPID}
+    - {xyz: [290.0, 200.0, 36], mode: DRILL}
+    - {xyz: [290.0, 200.0, 60], mode: RAPID}
+    - {xyz: [230.0, 200.0, 60], mode: RAPID}
+    - {xyz: [230.0, 200.0, 36], mode: DRILL}
+    - {xyz: [230.0, 200.0, 60], mode: RAPID}
+    - {xyz: [170.0, 200.0, 60], mode: RAPID}
+    - {xyz: [170.0, 200.0, 36], mode: DRILL}
+    - {xyz: [170.0, 200.0, 60], mode: RAPID}
+    - {xyz: [170.0, 230.0, 60], mode: RAPID}
+    - {xyz: [170.0, 230.0, 36], mode: DRILL}
+    - {xyz: [170.0, 230.0, 60], mode: RAPID}
+    - {xyz: [230.0, 230.0, 60], mode: RAPID}
+    - {xyz: [230.0, 230.0, 36], mode: DRILL}
+    - {xyz: [230.0, 230.0, 60], mode: RAPID}
+    - {xyz: [290.0, 230.0, 60], mode: RAPID}
+    - {xyz: [290.0, 230.0, 36], mode: DRILL}
+    - {xyz: [290.0, 230.0, 60], mode: RAPID}
+    - {xyz: [350.0, 230.0, 60], mode: RAPID}
+    - {xyz: [350.0, 230.0, 36], mode: DRILL}
+    - {xyz: [350.0, 230.0, 60], mode: RAPID}
+    - {xyz: [410.0, 230.0, 60], mode: RAPID}
+    - {xyz: [410.0, 230.0, 36], mode: DRILL}
+    - {xyz: [410.0, 230.0, 60], mode: RAPID}
+    repeat: 1
+  - {step: RAPID, duration_s: 5, tool_id: 5, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [410.0, 230.0, 100], coolant: false, operation: Retract
+      for unloading}
+  - {step: UNLOAD, duration_s: 12, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [170, 110, 100], coolant: false, operation: Unclamp and
+      unload}
+  - {step: INSPECT, duration_s: 8, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [170, 110, 100], coolant: false, operation: Inspect completed
+      part}
+- id: 1003
+  name: ALU_VALVE_P1003
+  revision: 2
+  part_id: 503
+  material: aluminum_6061
+  nominal_cycle_seconds: 939.7
+  segments:
+  - {step: LOAD, duration_s: 18, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Load and clamp
+      workpiece}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 3, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Load milling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 3, rpm: 5700, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [140, 100, 40], coolant: true, operation: Position
+      for milling}
+  - step: CUT
+    duration_s: 385.714286
+    tool_id: 3
+    rpm: 5700
+    feed_mm_min: 840
+    load_pct: 65
+    target_xyz_mm: [140, 100, 40]
+    coolant: true
+    operation: Continuous rough milling
+    start_xyz_mm: [140, 100, 40]
+    path:
+    - {xyz: [440, 100, 40], mode: CUT}
+    - {xyz: [440, 250, 40], mode: CUT}
+    - {xyz: [140, 250, 40], mode: CUT}
+    - {xyz: [140, 100, 40], mode: CUT}
+    repeat: 6
+  - step: CUT
+    duration_s: 154.285714
+    tool_id: 3
+    rpm: 5700
+    feed_mm_min: 700
+    load_pct: 48
+    target_xyz_mm: [140, 100, 40]
+    coolant: true
+    operation: Finish with same tool
+    start_xyz_mm: [140, 100, 40]
+    path:
+    - {xyz: [440, 100, 40], mode: CUT}
+    - {xyz: [440, 250, 40], mode: CUT}
+    - {xyz: [140, 250, 40], mode: CUT}
+    - {xyz: [140, 100, 40], mode: CUT}
+    repeat: 2
+  - {step: RAPID, duration_s: 5, tool_id: 3, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Retract
+      before tool change}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 6, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Load drilling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 6, rpm: 2800, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [140, 100, 60], coolant: true, operation: Position
+      for hole array}
+  - step: DRILL
+    duration_s: 311.7
+    tool_id: 6
+    rpm: 2800
+    feed_mm_min: 150
+    load_pct: 70
+    target_xyz_mm: [440.0, 250.0, 60]
+    coolant: true
+    operation: Drill 30 holes without tool changes
+    start_xyz_mm: [140, 100, 60]
+    path:
+    - {xyz: [140.0, 100.0, 60], mode: RAPID}
+    - {xyz: [140.0, 100.0, 36], mode: DRILL}
+    - {xyz: [140.0, 100.0, 60], mode: RAPID}
+    - {xyz: [200.0, 100.0, 60], mode: RAPID}
+    - {xyz: [200.0, 100.0, 36], mode: DRILL}
+    - {xyz: [200.0, 100.0, 60], mode: RAPID}
+    - {xyz: [260.0, 100.0, 60], mode: RAPID}
+    - {xyz: [260.0, 100.0, 36], mode: DRILL}
+    - {xyz: [260.0, 100.0, 60], mode: RAPID}
+    - {xyz: [320.0, 100.0, 60], mode: RAPID}
+    - {xyz: [320.0, 100.0, 36], mode: DRILL}
+    - {xyz: [320.0, 100.0, 60], mode: RAPID}
+    - {xyz: [380.0, 100.0, 60], mode: RAPID}
+    - {xyz: [380.0, 100.0, 36], mode: DRILL}
+    - {xyz: [380.0, 100.0, 60], mode: RAPID}
+    - {xyz: [440.0, 100.0, 60], mode: RAPID}
+    - {xyz: [440.0, 100.0, 36], mode: DRILL}
+    - {xyz: [440.0, 100.0, 60], mode: RAPID}
+    - {xyz: [440.0, 137.5, 60], mode: RAPID}
+    - {xyz: [440.0, 137.5, 36], mode: DRILL}
+    - {xyz: [440.0, 137.5, 60], mode: RAPID}
+    - {xyz: [380.0, 137.5, 60], mode: RAPID}
+    - {xyz: [380.0, 137.5, 36], mode: DRILL}
+    - {xyz: [380.0, 137.5, 60], mode: RAPID}
+    - {xyz: [320.0, 137.5, 60], mode: RAPID}
+    - {xyz: [320.0, 137.5, 36], mode: DRILL}
+    - {xyz: [320.0, 137.5, 60], mode: RAPID}
+    - {xyz: [260.0, 137.5, 60], mode: RAPID}
+    - {xyz: [260.0, 137.5, 36], mode: DRILL}
+    - {xyz: [260.0, 137.5, 60], mode: RAPID}
+    - {xyz: [200.0, 137.5, 60], mode: RAPID}
+    - {xyz: [200.0, 137.5, 36], mode: DRILL}
+    - {xyz: [200.0, 137.5, 60], mode: RAPID}
+    - {xyz: [140.0, 137.5, 60], mode: RAPID}
+    - {xyz: [140.0, 137.5, 36], mode: DRILL}
+    - {xyz: [140.0, 137.5, 60], mode: RAPID}
+    - {xyz: [140.0, 175.0, 60], mode: RAPID}
+    - {xyz: [140.0, 175.0, 36], mode: DRILL}
+    - {xyz: [140.0, 175.0, 60], mode: RAPID}
+    - {xyz: [200.0, 175.0, 60], mode: RAPID}
+    - {xyz: [200.0, 175.0, 36], mode: DRILL}
+    - {xyz: [200.0, 175.0, 60], mode: RAPID}
+    - {xyz: [260.0, 175.0, 60], mode: RAPID}
+    - {xyz: [260.0, 175.0, 36], mode: DRILL}
+    - {xyz: [260.0, 175.0, 60], mode: RAPID}
+    - {xyz: [320.0, 175.0, 60], mode: RAPID}
+    - {xyz: [320.0, 175.0, 36], mode: DRILL}
+    - {xyz: [320.0, 175.0, 60], mode: RAPID}
+    - {xyz: [380.0, 175.0, 60], mode: RAPID}
+    - {xyz: [380.0, 175.0, 36], mode: DRILL}
+    - {xyz: [380.0, 175.0, 60], mode: RAPID}
+    - {xyz: [440.0, 175.0, 60], mode: RAPID}
+    - {xyz: [440.0, 175.0, 36], mode: DRILL}
+    - {xyz: [440.0, 175.0, 60], mode: RAPID}
+    - {xyz: [440.0, 212.5, 60], mode: RAPID}
+    - {xyz: [440.0, 212.5, 36], mode: DRILL}
+    - {xyz: [440.0, 212.5, 60], mode: RAPID}
+    - {xyz: [380.0, 212.5, 60], mode: RAPID}
+    - {xyz: [380.0, 212.5, 36], mode: DRILL}
+    - {xyz: [380.0, 212.5, 60], mode: RAPID}
+    - {xyz: [320.0, 212.5, 60], mode: RAPID}
+    - {xyz: [320.0, 212.5, 36], mode: DRILL}
+    - {xyz: [320.0, 212.5, 60], mode: RAPID}
+    - {xyz: [260.0, 212.5, 60], mode: RAPID}
+    - {xyz: [260.0, 212.5, 36], mode: DRILL}
+    - {xyz: [260.0, 212.5, 60], mode: RAPID}
+    - {xyz: [200.0, 212.5, 60], mode: RAPID}
+    - {xyz: [200.0, 212.5, 36], mode: DRILL}
+    - {xyz: [200.0, 212.5, 60], mode: RAPID}
+    - {xyz: [140.0, 212.5, 60], mode: RAPID}
+    - {xyz: [140.0, 212.5, 36], mode: DRILL}
+    - {xyz: [140.0, 212.5, 60], mode: RAPID}
+    - {xyz: [140.0, 250.0, 60], mode: RAPID}
+    - {xyz: [140.0, 250.0, 36], mode: DRILL}
+    - {xyz: [140.0, 250.0, 60], mode: RAPID}
+    - {xyz: [200.0, 250.0, 60], mode: RAPID}
+    - {xyz: [200.0, 250.0, 36], mode: DRILL}
+    - {xyz: [200.0, 250.0, 60], mode: RAPID}
+    - {xyz: [260.0, 250.0, 60], mode: RAPID}
+    - {xyz: [260.0, 250.0, 36], mode: DRILL}
+    - {xyz: [260.0, 250.0, 60], mode: RAPID}
+    - {xyz: [320.0, 250.0, 60], mode: RAPID}
+    - {xyz: [320.0, 250.0, 36], mode: DRILL}
+    - {xyz: [320.0, 250.0, 60], mode: RAPID}
+    - {xyz: [380.0, 250.0, 60], mode: RAPID}
+    - {xyz: [380.0, 250.0, 36], mode: DRILL}
+    - {xyz: [380.0, 250.0, 60], mode: RAPID}
+    - {xyz: [440.0, 250.0, 60], mode: RAPID}
+    - {xyz: [440.0, 250.0, 36], mode: DRILL}
+    - {xyz: [440.0, 250.0, 60], mode: RAPID}
+    repeat: 1
+  - {step: RAPID, duration_s: 5, tool_id: 6, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [440.0, 250.0, 100], coolant: false, operation: Retract
+      for unloading}
+  - {step: UNLOAD, duration_s: 12, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Unclamp and
+      unload}
+  - {step: INSPECT, duration_s: 8, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [140, 100, 100], coolant: false, operation: Inspect completed
+      part}
+- id: 1004
+  name: BRASS_FITTING_P1004
+  revision: 2
+  part_id: 504
+  material: brass_C360
+  nominal_cycle_seconds: 719.54
+  segments:
+  - {step: LOAD, duration_s: 18, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [150, 100, 100], coolant: false, operation: Load and clamp
+      workpiece}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 7, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [150, 100, 100], coolant: false, operation: Load milling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 7, rpm: 4900, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [150, 100, 40], coolant: true, operation: Position
+      for milling}
+  - step: CUT
+    duration_s: 260.0
+    tool_id: 7
+    rpm: 4900
+    feed_mm_min: 900
+    load_pct: 65
+    target_xyz_mm: [150, 100, 40]
+    coolant: true
+    operation: Continuous rough milling
+    start_xyz_mm: [150, 100, 40]
+    path:
+    - {xyz: [410, 100, 40], mode: CUT}
+    - {xyz: [410, 230, 40], mode: CUT}
+    - {xyz: [150, 230, 40], mode: CUT}
+    - {xyz: [150, 100, 40], mode: CUT}
+    repeat: 5
+  - step: CUT
+    duration_s: 130.0
+    tool_id: 7
+    rpm: 4900
+    feed_mm_min: 720
+    load_pct: 48
+    target_xyz_mm: [150, 100, 40]
+    coolant: true
+    operation: Finish with same tool
+    start_xyz_mm: [150, 100, 40]
+    path:
+    - {xyz: [410, 100, 40], mode: CUT}
+    - {xyz: [410, 230, 40], mode: CUT}
+    - {xyz: [150, 230, 40], mode: CUT}
+    - {xyz: [150, 100, 40], mode: CUT}
+    repeat: 2
+  - {step: RAPID, duration_s: 5, tool_id: 7, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [150, 100, 100], coolant: false, operation: Retract
+      before tool change}
+  - {step: TOOL_SWAP, duration_s: 10, tool_id: 8, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [150, 100, 100], coolant: false, operation: Load drilling
+      tool}
+  - {step: RAPID, duration_s: 10, tool_id: 8, rpm: 3800, feed_mm_min: 6000, load_pct: 5, target_xyz_mm: [150, 100, 60], coolant: true, operation: Position
+      for hole array}
+  - step: DRILL
+    duration_s: 241.54
+    tool_id: 8
+    rpm: 3800
+    feed_mm_min: 240
+    load_pct: 53
+    target_xyz_mm: [150.0, 230.0, 60]
+    coolant: true
+    operation: Drill 36 holes without tool changes
+    start_xyz_mm: [150, 100, 60]
+    path:
+    - {xyz: [150.0, 100.0, 60], mode: RAPID}
+    - {xyz: [150.0, 100.0, 36], mode: DRILL}
+    - {xyz: [150.0, 100.0, 60], mode: RAPID}
+    - {xyz: [202.0, 100.0, 60], mode: RAPID}
+    - {xyz: [202.0, 100.0, 36], mode: DRILL}
+    - {xyz: [202.0, 100.0, 60], mode: RAPID}
+    - {xyz: [254.0, 100.0, 60], mode: RAPID}
+    - {xyz: [254.0, 100.0, 36], mode: DRILL}
+    - {xyz: [254.0, 100.0, 60], mode: RAPID}
+    - {xyz: [306.0, 100.0, 60], mode: RAPID}
+    - {xyz: [306.0, 100.0, 36], mode: DRILL}
+    - {xyz: [306.0, 100.0, 60], mode: RAPID}
+    - {xyz: [358.0, 100.0, 60], mode: RAPID}
+    - {xyz: [358.0, 100.0, 36], mode: DRILL}
+    - {xyz: [358.0, 100.0, 60], mode: RAPID}
+    - {xyz: [410.0, 100.0, 60], mode: RAPID}
+    - {xyz: [410.0, 100.0, 36], mode: DRILL}
+    - {xyz: [410.0, 100.0, 60], mode: RAPID}
+    - {xyz: [410.0, 126.0, 60], mode: RAPID}
+    - {xyz: [410.0, 126.0, 36], mode: DRILL}
+    - {xyz: [410.0, 126.0, 60], mode: RAPID}
+    - {xyz: [358.0, 126.0, 60], mode: RAPID}
+    - {xyz: [358.0, 126.0, 36], mode: DRILL}
+    - {xyz: [358.0, 126.0, 60], mode: RAPID}
+    - {xyz: [306.0, 126.0, 60], mode: RAPID}
+    - {xyz: [306.0, 126.0, 36], mode: DRILL}
+    - {xyz: [306.0, 126.0, 60], mode: RAPID}
+    - {xyz: [254.0, 126.0, 60], mode: RAPID}
+    - {xyz: [254.0, 126.0, 36], mode: DRILL}
+    - {xyz: [254.0, 126.0, 60], mode: RAPID}
+    - {xyz: [202.0, 126.0, 60], mode: RAPID}
+    - {xyz: [202.0, 126.0, 36], mode: DRILL}
+    - {xyz: [202.0, 126.0, 60], mode: RAPID}
+    - {xyz: [150.0, 126.0, 60], mode: RAPID}
+    - {xyz: [150.0, 126.0, 36], mode: DRILL}
+    - {xyz: [150.0, 126.0, 60], mode: RAPID}
+    - {xyz: [150.0, 152.0, 60], mode: RAPID}
+    - {xyz: [150.0, 152.0, 36], mode: DRILL}
+    - {xyz: [150.0, 152.0, 60], mode: RAPID}
+    - {xyz: [202.0, 152.0, 60], mode: RAPID}
+    - {xyz: [202.0, 152.0, 36], mode: DRILL}
+    - {xyz: [202.0, 152.0, 60], mode: RAPID}
+    - {xyz: [254.0, 152.0, 60], mode: RAPID}
+    - {xyz: [254.0, 152.0, 36], mode: DRILL}
+    - {xyz: [254.0, 152.0, 60], mode: RAPID}
+    - {xyz: [306.0, 152.0, 60], mode: RAPID}
+    - {xyz: [306.0, 152.0, 36], mode: DRILL}
+    - {xyz: [306.0, 152.0, 60], mode: RAPID}
+    - {xyz: [358.0, 152.0, 60], mode: RAPID}
+    - {xyz: [358.0, 152.0, 36], mode: DRILL}
+    - {xyz: [358.0, 152.0, 60], mode: RAPID}
+    - {xyz: [410.0, 152.0, 60], mode: RAPID}
+    - {xyz: [410.0, 152.0, 36], mode: DRILL}
+    - {xyz: [410.0, 152.0, 60], mode: RAPID}
+    - {xyz: [410.0, 178.0, 60], mode: RAPID}
+    - {xyz: [410.0, 178.0, 36], mode: DRILL}
+    - {xyz: [410.0, 178.0, 60], mode: RAPID}
+    - {xyz: [358.0, 178.0, 60], mode: RAPID}
+    - {xyz: [358.0, 178.0, 36], mode: DRILL}
+    - {xyz: [358.0, 178.0, 60], mode: RAPID}
+    - {xyz: [306.0, 178.0, 60], mode: RAPID}
+    - {xyz: [306.0, 178.0, 36], mode: DRILL}
+    - {xyz: [306.0, 178.0, 60], mode: RAPID}
+    - {xyz: [254.0, 178.0, 60], mode: RAPID}
+    - {xyz: [254.0, 178.0, 36], mode: DRILL}
+    - {xyz: [254.0, 178.0, 60], mode: RAPID}
+    - {xyz: [202.0, 178.0, 60], mode: RAPID}
+    - {xyz: [202.0, 178.0, 36], mode: DRILL}
+    - {xyz: [202.0, 178.0, 60], mode: RAPID}
+    - {xyz: [150.0, 178.0, 60], mode: RAPID}
+    - {xyz: [150.0, 178.0, 36], mode: DRILL}
+    - {xyz: [150.0, 178.0, 60], mode: RAPID}
+    - {xyz: [150.0, 204.0, 60], mode: RAPID}
+    - {xyz: [150.0, 204.0, 36], mode: DRILL}
+    - {xyz: [150.0, 204.0, 60], mode: RAPID}
+    - {xyz: [202.0, 204.0, 60], mode: RAPID}
+    - {xyz: [202.0, 204.0, 36], mode: DRILL}
+    - {xyz: [202.0, 204.0, 60], mode: RAPID}
+    - {xyz: [254.0, 204.0, 60], mode: RAPID}
+    - {xyz: [254.0, 204.0, 36], mode: DRILL}
+    - {xyz: [254.0, 204.0, 60], mode: RAPID}
+    - {xyz: [306.0, 204.0, 60], mode: RAPID}
+    - {xyz: [306.0, 204.0, 36], mode: DRILL}
+    - {xyz: [306.0, 204.0, 60], mode: RAPID}
+    - {xyz: [358.0, 204.0, 60], mode: RAPID}
+    - {xyz: [358.0, 204.0, 36], mode: DRILL}
+    - {xyz: [358.0, 204.0, 60], mode: RAPID}
+    - {xyz: [410.0, 204.0, 60], mode: RAPID}
+    - {xyz: [410.0, 204.0, 36], mode: DRILL}
+    - {xyz: [410.0, 204.0, 60], mode: RAPID}
+    - {xyz: [410.0, 230.0, 60], mode: RAPID}
+    - {xyz: [410.0, 230.0, 36], mode: DRILL}
+    - {xyz: [410.0, 230.0, 60], mode: RAPID}
+    - {xyz: [358.0, 230.0, 60], mode: RAPID}
+    - {xyz: [358.0, 230.0, 36], mode: DRILL}
+    - {xyz: [358.0, 230.0, 60], mode: RAPID}
+    - {xyz: [306.0, 230.0, 60], mode: RAPID}
+    - {xyz: [306.0, 230.0, 36], mode: DRILL}
+    - {xyz: [306.0, 230.0, 60], mode: RAPID}
+    - {xyz: [254.0, 230.0, 60], mode: RAPID}
+    - {xyz: [254.0, 230.0, 36], mode: DRILL}
+    - {xyz: [254.0, 230.0, 60], mode: RAPID}
+    - {xyz: [202.0, 230.0, 60], mode: RAPID}
+    - {xyz: [202.0, 230.0, 36], mode: DRILL}
+    - {xyz: [202.0, 230.0, 60], mode: RAPID}
+    - {xyz: [150.0, 230.0, 60], mode: RAPID}
+    - {xyz: [150.0, 230.0, 36], mode: DRILL}
+    - {xyz: [150.0, 230.0, 60], mode: RAPID}
+    repeat: 1
+  - {step: RAPID, duration_s: 5, tool_id: 8, rpm: 0, feed_mm_min: 6000, load_pct: 0, target_xyz_mm: [150.0, 230.0, 100], coolant: false, operation: Retract
+      for unloading}
+  - {step: UNLOAD, duration_s: 12, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [150, 100, 100], coolant: false, operation: Unclamp and
+      unload}
+  - {step: INSPECT, duration_s: 8, tool_id: 0, rpm: 0, feed_mm_min: 0, load_pct: 0, target_xyz_mm: [150, 100, 100], coolant: false, operation: Inspect completed
+      part}

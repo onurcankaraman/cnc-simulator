@@ -1,0 +1,43 @@
+contract: 158 fields; DB bounds/overlaps/NodeIds PASS
+ Container cnc-smulatoru-tests-run-4439e7f1958a Creating 
+ Container cnc-smulatoru-tests-run-4439e7f1958a Created 
+Internal ctest changing into directory: /app/build
+Test project /app/build
+    Start 1: deterministic
+1/3 Test #1: deterministic ....................   Passed   81.41 sec
+    Start 2: bounded_history
+2/3 Test #2: bounded_history ..................   Passed    6.67 sec
+    Start 3: long_programs
+3/3 Test #3: long_programs ....................   Passed    2.51 sec
+
+100% tests passed, 0 tests failed out of 3
+
+Total Test time (real) =  90.60 sec
+ERROR:snap7.common:b'CPU : Item not available'
+{"result": "PASS", "fields": 158, "aligned_sequences": [31846, 31847, 31848], "db_sizes": [256, 256, 256, 128], "s7_slots": [0, 1], "s7_write": "REJECTED", "ua_write": "REJECTED", "ua_subscription_notifications": 5, "ua_security": "Basic256Sha256/SignAndEncrypt", "source_timestamp": "2026-11-02T15:31:05.423000+00:00", "mqtt_schema": 1, "http_validation": "PASS", "utc": "2026-11-02T15:31:06Z"}
+{"result": "PASS", "programs": [{"id": 1001, "nominal_cycle_seconds": 914.14, "planned_tool_changes": 2, "revision": 2}, {"id": 1002, "nominal_cycle_seconds": 970.884211, "planned_tool_changes": 2, "revision": 2}, {"id": 1003, "nominal_cycle_seconds": 939.7, "planned_tool_changes": 2, "revision": 2}, {"id": 1004, "nominal_cycle_seconds": 719.54, "planned_tool_changes": 2, "revision": 2}], "HTTP_MQTT_sequence": 31857, "SQL_MQTT_sequence": 31855, "telemetry_fields_unchanged": 158}
+{"result": "PASS", "timescaledb": "2.31.0", "hypertables": 2, "direct_SQL": "158 fields equal MQTT snapshot; reader SELECT only", "retention": "exact 24h boundary; counters/active order preserved; scheduled every minute"}
+ServiceFault (BadSecurityPolicyRejected, diagnostics: DiagnosticInfo(SymbolicId=None, NamespaceURI=None, Locale=None, LocalizedText=None, AdditionalInfo=None, InnerStatusCode=None, InnerDiagnosticInfo=None)) from server received  in response to CreateSessionRequest
+PASS default OPC None session rejected; anonymous MQTT rejected; observer MQTT publish not delivered
+ Container cnc-smulatoru-cnc-simulator-1 Stopping 
+ Container cnc-smulatoru-cnc-simulator-1 Stopped 
+ Container cnc-smulatoru-timescaledb-1 Waiting 
+ Container cnc-smulatoru-mqtt-broker-1 Waiting 
+ Container cnc-smulatoru-timescaledb-1 Healthy 
+ Container cnc-smulatoru-mqtt-broker-1 Healthy 
+ Container cnc-smulatoru-cnc-simulator-1 Starting 
+ Container cnc-smulatoru-cnc-simulator-1 Started 
+ Container cnc-smulatoru-mqtt-broker-1 Stopping 
+ Container cnc-smulatoru-mqtt-broker-1 Stopped 
+ Container cnc-smulatoru-mqtt-broker-1 Starting 
+ Container cnc-smulatoru-mqtt-broker-1 Started 
+ Container cnc-smulatoru-timescaledb-1 Stopping 
+ Container cnc-smulatoru-timescaledb-1 Stopped 
+ Container cnc-smulatoru-timescaledb-1 Starting 
+ Container cnc-smulatoru-timescaledb-1 Started 
+{"result": "PASS", "restart": "counters/tools/order/energy preserved; incomplete cycle not counted", "broker_outage": "engine/DB continued; MQTT reconnected", "outage_sequence_delta": 6, "utc": "2026-11-02T15:31:39Z"}
+{"result": "PASS", "database_outage": "engine continued; reconnected; sample_gap recorded"}
+{"result": "PASS", "database_write_failure": "SQL permission failure; engine continued; durable checkpoint stable; recovered after grant"}
+ Container cnc-admin-test Creating 
+ Container cnc-admin-test Created 
+PASS admin authentication, malformed JSON, enum validation, rate limit, E-stop interlock, acknowledgement and SQL audit

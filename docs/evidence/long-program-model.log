@@ -1,0 +1,31 @@
+ Container cnc-smulatoru-tests-run-ba44fd5d9c63 Creating 
+ Container cnc-smulatoru-tests-run-ba44fd5d9c63 Created 
+Internal ctest changing into directory: /app/build
+UpdateCTestConfiguration  from :/app/build/DartConfiguration.tcl
+UpdateCTestConfiguration  from :/app/build/DartConfiguration.tcl
+Test project /app/build
+Constructing a list of tests
+Done constructing a list of tests
+Updating test list for fixtures
+Added 0 tests to meet fixture requirements
+Checking test dependency graph...
+Checking test dependency graph end
+test 3
+    Start 3: long_programs
+
+3: Test command: /app/build/program-tests
+3: Working Directory: /app
+3: Test timeout computed to be: 10000000
+3: PASS program=1001 nominal_s=914.14 changes_per_two_parts=4 min_tool_run_s=408.4
+3: PASS program=1002 nominal_s=970.884 changes_per_two_parts=4 min_tool_run_s=408.8
+3: PASS program=1003 nominal_s=939.7 changes_per_two_parts=4 min_tool_run_s=400.4
+3: PASS program=1004 nominal_s=719.54 changes_per_two_parts=4 min_tool_run_s=331
+3: PASS upgrade checkpoint, same-tool skip, NC path bounds
+1/1 Test #3: long_programs ....................   Passed    1.78 sec
+
+The following tests passed:
+	long_programs
+
+100% tests passed, 0 tests failed out of 1
+
+Total Test time (real) =   1.78 sec

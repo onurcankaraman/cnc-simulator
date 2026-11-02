@@ -68,3 +68,16 @@ A single container is technically possible with a process supervisor, but would 
 ## Live public demo SQL
 
 With the owner's authorization, the deployed demo database is also reachable directly at `cnc.digitheta.dev:5432`, database `cnc`, read-only user `cnc_demo`. Use **TLS `verify-full`** and the [public root CA](docs/certificates/cnc-demo-root-ca.pem); obtain the strong password privately. SSH is not required. Administrator/writer accounts remain blocked from the Internet. See the [connection guide](docs/CONNECTION_GUIDE.md#public-demo-postgresql-over-tls-2026-11-02). This does not change local Compose defaults or expose S7/admin.
+
+## Longer operations and NC preview
+
+Program revision 2 runs nominal 12–16 minute cycles with at most two planned tool changes per part. Roughing and finishing share a cutter; hole arrays share a drill. The dashboard shows the current synthetic G-code block and complete preview. Faults, wear and breaks still apply. These previews must not be used on real machinery.
+
+Existing Timescale installations must apply the additive migration **before** starting the new runtime (fresh volumes include it automatically):
+
+```sh
+docker compose exec -T timescaledb psql -v ON_ERROR_STOP=1 -U postgres -d cnc < timescaledb/migrations/002-nc-context.sql
+docker compose up -d --build cnc-simulator
+```
+
+Keep your deployment's Compose overrides/project name on both commands. Persistent counters and tool wear survive the revision change; an interrupted part restarts. Older history has an empty `nc_json` object.

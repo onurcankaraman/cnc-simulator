@@ -282,6 +282,7 @@ void Protocols::publish(const MachineSnapshot &s, const Json &events) {
   p.update(s);
   bool re = p.connected.exchange(false);
   p.send("telemetry", envelope(s, s.data), 0, false);
+  p.send("program", envelope(s, s.nc), 1, true);
   if (re || int(s.data["state_code"]) != p.last_state || s.sequence % 30 == 0) {
     p.send("state", envelope(s, s.data), 1, true);
     p.last_state = s.data["state_code"];

@@ -9,6 +9,7 @@ struct MachineSnapshot {
   Json data;
   Json tools;
   Json metrics;
+  Json nc;
 };
 std::string utc(int64_t ms);
 Json envelope(const MachineSnapshot &s, const Json &data);
