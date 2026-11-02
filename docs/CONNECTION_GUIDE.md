@@ -94,4 +94,28 @@ Telemetry/events retain 24 hours with up to 60 seconds cleanup delay. Runtime st
 docker compose exec -T timescaledb pg_dump -U postgres -d cnc -Fc > cnc-backup.dump
 ```
 
-Keep backup files private. SQLite files from the previous version are not read or automatically imported. Production is still on the previous deployment until an explicit, tested cutover.
+Keep backup files private. SQLite files from the previous version are not read or automatically imported. Production was migrated with a validated checkpoint/history copy on 2026-11-02.
+
+
+## Live TimescaleDB access (2026-11-02)
+
+Web `https://cnc.digitheta.dev` and native MQTT TLS `cnc-mqtt.digitheta.dev:443` are unchanged, including existing viewer/observer credentials. S7/OPC UA still require an authorized operator tunnel; admin remains disabled.
+
+Direct SQL uses a dedicated forwarding-only SSH account, not a public PostgreSQL port:
+
+| Setting | Value |
+|---|---|
+| SSH host / port | `cnc.digitheta.dev` / `22` |
+| SSH user | `cnc-db` |
+| PostgreSQL host / port inside tunnel | `127.0.0.1` / `15432` |
+| Database / user | `cnc` / `cnc_reader` |
+
+Both passwords are distributed privately. DBeaver/DataGrip: enable SSH tunneling and use the literal database host `127.0.0.1`. Do not use `localhost` as the remote forwarding target: the account permits only `127.0.0.1:15432`. No shell, SFTP, TTY, remote forwarding or other target ports are allowed. SQL transport is encrypted by SSH; PostgreSQL SSL is not required on this private path.
+
+```sh
+ssh -N -L 25432:127.0.0.1:15432 cnc-db@cnc.digitheta.dev
+# Separate terminal; prompts for the SQL reader password:
+psql -h 127.0.0.1 -p 25432 -U cnc_reader -d cnc -W
+```
+
+Use the existing table queries above. `cnc_reader` can read telemetry/events/orders, but cannot modify data or read private runtime checkpoints. Operator runbook and secrets are under `/opt/cnc-simulator` on the host; never publish those files.

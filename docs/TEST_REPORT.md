@@ -1,3 +1,19 @@
+# Live TimescaleDB cutover — 2026-11-02 (Europe/Istanbul)
+
+Application commit **0ff0a99** deployed on Linux x86_64 using Docker Compose project `cnc-live`. Only the CNC simulator container was replaced; the existing broker and all 47 unrelated containers retained their IDs. One new TimescaleDB container was added. All three CNC services are healthy. Traefik was not changed or restarted.
+
+A consistent SQLite backup was first imported into a disposable rehearsal database and compared column-by-column, including JSON and runtime checkpoints. The final cutover stopped only the simulator, took another SQLite backup, and transactionally copied **7,036 telemetry rows, 3,338 events, 3 orders and 1 runtime checkpoint** into the empty production TimescaleDB database. Full per-row comparison passed before starting the new runtime. Cutover window: **07:57:31–07:57:50 UTC / 10:57:31–10:57:50 Istanbul (19 seconds)**. Immediately after startup: **219 parts, 216 good, 3 rejected, job 3**, all 12 wear values preserved, energy nondecreasing. Old SQLite backup and rollback image remain private on the host; the rehearsal database was removed after verification. Rolling back later requires conversion of newer TimescaleDB state, not simply restarting the stale SQLite image.
+
+Actual commands included `docker compose -p cnc-live -f compose.yaml -f compose.production.yaml build cnc-simulator`, a targeted `stop cnc-simulator`, `python3 /root/cnc-migrate-timescale.py /root/cnc-timescale-backup/final.sqlite cnc`, and targeted `up -d --no-deps --no-build --wait cnc-simulator`. Migration source, backups, raw full-copy validation and operator commands are retained privately on the host.
+
+External verification: `.venv312/bin/python /tmp/cnc-live-timescale-test.py` on the deployment workstation, independent Snap7/asyncua/Paho/psycopg clients ([raw result](evidence/timescale-live-deployment.log)). HTTPS TLS and Basic auth, nonempty static assets, MQTT TLS443, S7 and encrypted OPC UA passed. All158 fields matched at sequences **36503,36506,36507**; PostgreSQL sample **36512** matched the entire independently received MQTT payload. SQL was accessed using the new restricted developer SSH account and `cnc_reader`; attempted writes and private runtime_state reads were denied. Shell sessions and forwarding to the HTTP port were denied. SQL15432 and internal protocol ports were not publicly reachable. Global SSH effective settings compared equal before/after; the new SSH Match block affects only `cnc-db`.
+
+Public web/MQTT endpoints and credentials are unchanged. PostgreSQL is accessed through an SSH tunnel; see [connection guide](CONNECTION_GUIDE.md). No credentials were committed. **24h soak = NOT RUN**; the local short memory test below is not a live-server 24h claim. Before deployment, both Linux x86_64 GitHub CI runs passed: [branch](https://github.com/onurcankaraman/cnc-simulator/actions/runs/41408273012), [PR](https://github.com/onurcankaraman/cnc-simulator/actions/runs/41408338209).
+
+The following local and SQLite sections are historical verification records; their statements about production not yet being changed refer to those earlier checkpoints.
+
+---
+
 # TimescaleDB local verification — 2026-11-02 (Europe/Istanbul)
 
 SQLite production storage has been replaced with C++ libpq + TimescaleDB **2.31.0 / PostgreSQL 17.11**, image pinned by digest in Compose. Three local containers are healthy. Production server was not modified. Existing SQLite files remain untouched; this local database starts fresh, with no automatic import of old counters/history. **24h soak = NOT RUN.**
