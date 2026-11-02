@@ -64,3 +64,7 @@ A short test must not be reported as a completed soak. RSS is process RSS for si
 ## Why three containers?
 
 A single container is technically possible with a process supervisor, but would couple PostgreSQL, broker and simulator restarts, privileges and health checks. This deployment uses one command (`docker compose up -d --build`) with three independently managed containers. Database credentials are generated locally and excluded from Git; SQL is not Internet-exposed. The ≤100 MiB simulator+broker RSS target remains; TimescaleDB and full-stack RSS are measured separately, not hidden inside the original figure.
+
+## Live public demo SQL
+
+With the owner's authorization, the deployed demo database is also reachable directly at `cnc.digitheta.dev:5432`, database `cnc`, read-only user `cnc_demo`. Use **TLS `verify-full`** and the [public root CA](docs/certificates/cnc-demo-root-ca.pem); obtain the strong password privately. SSH is not required. Administrator/writer accounts remain blocked from the Internet. See the [connection guide](docs/CONNECTION_GUIDE.md#public-demo-postgresql-over-tls-2026-11-02). This does not change local Compose defaults or expose S7/admin.
