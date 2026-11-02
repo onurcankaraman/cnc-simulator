@@ -40,6 +40,7 @@ docker compose exec -T mqtt-broker sh -c \
 | Suffix | QoS | Retained | Cadence |
 |---|---:|---|---|
 | telemetry | 0 | no | 1 second or state/event publication |
+| program | 1 | yes | each snapshot publication; separate NC schema v1 |
 | state | 1 | yes | change, reconnect, periodic heartbeat |
 | tools | 1 | yes | events, reconnect, periodic update |
 | events | 1 | no | immediate engine events |
@@ -146,3 +147,18 @@ The account can SELECT `telemetry`, `events` and `orders`; writes, schema change
 Certificates renew through existing Traefik ACME management. A dedicated host timer copies only this hostname's renewed certificate into the database's read-only TLS directory and reloads PostgreSQL every 12 hours when it changes. Admin/writer secrets and the TLS private key stay on the server and are not in this repository. The bundled CA is a public trust anchor, not a server certificate or private key.
 
 See [PostgreSQL SSL and HBA rules](https://www.postgresql.org/docs/17/auth-pg-hba-conf.html) and [actual external test evidence](evidence/public-sql-tls.log). **24h soak = NOT RUN.**
+
+## Synthetic NC program context
+
+`GET /api/v1/program` returns the current snapshot envelope (`contracts/program.schema.json`). `GET /api/v1/programs` returns all four revision-2 previews, nominal cycle seconds and planned tool changes. `/api/v1/status` includes the same context as `nc`. MQTT topic `plant/demo/cnc/CNC-01/program` carries the same snapshot context; compare matching `sequence` values. Existing telemetry v1, 158 CSV tags, S7 layouts and OPC NodeIds are unchanged.
+
+Context includes program/revision, segment/operation, line/code, segment elapsed/remaining seconds, accumulated cutting seconds for the loaded tool, requested tool and executing flag. A line number identifies a preview block, not real controller execution. Tool cutting time excludes rapid moves/stops and resets on a completed tool change or replacement. These synthetic previews are not machine-ready G-code.
+
+```sql
+SELECT ts_ms, seq, program_id, tool_id,
+       nc_json->>'code' AS preview_block,
+       nc_json->>'tool_cutting_s' AS tool_cutting_seconds
+FROM telemetry ORDER BY ts_ms DESC LIMIT 100;
+```
+
+NC history shares the 24-hour telemetry retention. Pre-upgrade rows have `{}`. Apply `timescaledb/migrations/002-nc-context.sql` before upgrading an existing runtime.

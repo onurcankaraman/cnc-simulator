@@ -61,7 +61,7 @@ int main() {
             "spindle acceleration bound");
       if (i % 5 == 0) {
         auto x = a.snapshot(), y = b.snapshot();
-        check(x.data == y.data, "deterministic replay");
+        check(x.data == y.data && x.nc == y.nc, "deterministic replay");
         states.insert(int(x.data["state_code"]));
         auto &d = x.data;
         check(int(d["total_parts_count"]) ==
@@ -226,7 +226,7 @@ int main() {
     traces << "seconds,load,temp,rpm,vibration,wear,power,energy,parts,program,tool,cutting\n";
     int stress_parts = 0;
     double integrated = 0;
-    for (int i = 0; i < 3000000 && stress_parts < 1000; i++) {
+    for (int i = 0; i < 12000000 && stress_parts < 1000; i++) {
       stress.tick(.2, epoch + i * 200);
       integrated += double(stress.data()["power_kw"]) * .2 / 3600;
       if (i % 25 == 0) {

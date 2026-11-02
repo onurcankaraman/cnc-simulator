@@ -1,0 +1,22 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "title":"CNC synthetic NC context v1 (separate MQTT program topic)",
+  "type":"object",
+  "required":["schema_version","machine_id","ts_utc","sequence","data"],
+  "additionalProperties":false,
+  "properties":{
+    "schema_version":{"const":1},"machine_id":{"const":"CNC-01"},
+    "ts_utc":{"type":"string"},"sequence":{"type":"integer","minimum":0},
+    "data":{"type":"object","additionalProperties":false,
+      "required":["program_id","revision","segment","operation","line","code","elapsed_s","remaining_s","tool_cutting_s","requested_tool","executing","synthetic"],
+      "properties":{
+        "program_id":{"type":"integer","minimum":0},"revision":{"type":"integer","minimum":1},
+        "segment":{"type":"integer","minimum":0},"operation":{"type":"string","maxLength":120},
+        "line":{"type":"integer","minimum":0},"code":{"type":"string","maxLength":160},
+        "elapsed_s":{"type":"number","minimum":0},"remaining_s":{"type":"number","minimum":0},
+        "tool_cutting_s":{"type":"number","minimum":0},"requested_tool":{"type":"integer","minimum":0,"maximum":12},
+        "executing":{"type":"boolean"},"synthetic":{"const":true}
+      }
+    }
+  }
+}

@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS timescaledb;
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
-CREATE TABLE telemetry(ts_ms bigint PRIMARY KEY,seq bigint NOT NULL,state_code integer,job_id bigint,program_id integer,tool_id integer,spindle_rpm double precision,load_pct double precision,feed_mm_min double precision,x_mm double precision,y_mm double precision,z_mm double precision,vibration double precision,spindle_temp_c double precision,power_kw double precision,energy_kwh double precision,wear_pct double precision,coolant_flow double precision,alarm_code integer,good_count bigint,scrap_count bigint,payload_json jsonb NOT NULL);
+CREATE TABLE telemetry(ts_ms bigint PRIMARY KEY,seq bigint NOT NULL,state_code integer,job_id bigint,program_id integer,tool_id integer,spindle_rpm double precision,load_pct double precision,feed_mm_min double precision,x_mm double precision,y_mm double precision,z_mm double precision,vibration double precision,spindle_temp_c double precision,power_kw double precision,energy_kwh double precision,wear_pct double precision,coolant_flow double precision,alarm_code integer,good_count bigint,scrap_count bigint,payload_json jsonb NOT NULL,nc_json jsonb NOT NULL DEFAULT '{}'::jsonb);
 SELECT create_hypertable('telemetry',by_range('ts_ms',3600000::bigint));
 CREATE TABLE events(id bigint,ts_ms bigint NOT NULL,type text,code integer,severity integer,state_from integer,state_to integer,details_json jsonb,PRIMARY KEY(ts_ms,id));
 SELECT create_hypertable('events',by_range('ts_ms',3600000::bigint));

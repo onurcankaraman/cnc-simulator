@@ -64,8 +64,8 @@ bool Store::write(const MachineSnapshot &s,const Json &state,const Json &ev,cons
   }
   if(sample) {
     const auto &d=s.data;
-    ok=execute("INSERT INTO telemetry VALUES("+params(22)+") ON CONFLICT(ts_ms) DO NOTHING",
-      {s.ts_ms,s.sequence,d["state_code"],d["job_id"],d["program_id"],d["current_tool_id"],d["spindle_actual_rpm"],d["spindle_load_pct"],d["feed_actual_mm_min"],d["axis_x_mm"],d["axis_y_mm"],d["axis_z_mm"],d["vibration_rms_mm_s"],d["spindle_temp_c"],d["power_kw"],d["energy_kwh"],d["active_wear_pct"],d["coolant_flow_l_min"],d["alarm_code"],d["total_good_count"],d["total_reject_count"],envelope(s,d).dump()}) && ok;
+    ok=execute("INSERT INTO telemetry VALUES("+params(23)+") ON CONFLICT(ts_ms) DO NOTHING",
+      {s.ts_ms,s.sequence,d["state_code"],d["job_id"],d["program_id"],d["current_tool_id"],d["spindle_actual_rpm"],d["spindle_load_pct"],d["feed_actual_mm_min"],d["axis_x_mm"],d["axis_y_mm"],d["axis_z_mm"],d["vibration_rms_mm_s"],d["spindle_temp_c"],d["power_kw"],d["energy_kwh"],d["active_wear_pct"],d["coolant_flow_l_min"],d["alarm_code"],d["total_good_count"],d["total_reject_count"],envelope(s,d).dump(),s.nc.is_object()?s.nc.dump():"{}"}) && ok;
   }
   ok=execute("INSERT INTO runtime_state VALUES('engine',$1,$2) ON CONFLICT(key) DO UPDATE SET value_json=excluded.value_json,updated_ms=excluded.updated_ms",{state.dump(),s.ts_ms}) && ok;
   if(o["order_id"].get<int>()>0) ok=execute(order_sql,{o["order_id"],o["program_id"],o["part_id"],o["target_qty"],o["good_qty"],o["scrap_qty"],o["started_ms"],o["completed_ms"],o["status"]}) && ok;

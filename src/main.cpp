@@ -123,8 +123,13 @@ int main() {
         auto j = envelope(snapshot, snapshot.data);
         j["health"] = health();
         j["metrics"] = snapshot.metrics;
+        j["nc"] = snapshot.nc;
         return json(j);
       }
+      if (r.path == "/api/v1/program")
+        return json(envelope(snapshot, snapshot.nc));
+      if (r.path == "/api/v1/programs")
+        return json({{"schema_version",1},{"programs",engine.program_catalog()}});
       if (r.path == "/api/v1/tools")
         return json(envelope(snapshot, {{"tools", snapshot.tools}}));
       if (r.path == "/api/v1/metrics") {

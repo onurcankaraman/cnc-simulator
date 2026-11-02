@@ -1,4 +1,5 @@
 #include "config.hpp"
+#include "core/nc_program.hpp"
 #include <cstdlib>
 #include <set>
 #include <stdexcept>
@@ -69,6 +70,7 @@ Json load_config(const std::string &dir) {
     }
     if (p["segments"].back()["step"] != "INSPECT")
       throw std::runtime_error("program must finish at inspection");
+    compile_nc_program(p);
     p["nominal_cycle_seconds"] = sum;
   }
   if (double(c["plant"]["simulation"]["speed"]) != 1)

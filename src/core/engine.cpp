@@ -108,8 +108,16 @@ bool Engine::planned_break() const {
   return false;
 }
 void Engine::begin_segment() {
-  auto &s = config_["programs"]["programs"][program_]["segments"][segment_];
+  auto &segments = config_["programs"]["programs"][program_]["segments"];
+  while (segments[segment_]["step"] == "TOOL_SWAP" && int(segments[segment_]["tool_id"]) == tool_) {
+    event("tool_change_skipped", 0, 0, {{"reason", "tool already loaded"}});
+    ++segment_;
+  }
+  auto &s = segments[segment_];
   elapsed_ = 0;
+  path_point_ = 0;
+  path_done_ = !s.contains("motion_path");
+  active_nc_ = s["nc"];
   int step = step_code(s["step"]);
   if (step == 6) {
     transition(60);
@@ -124,6 +132,7 @@ void Engine::finish_segment() {
   auto &segs = config_["programs"]["programs"][program_]["segments"];
   if (int(d_["current_step_type"]) == 6) {
     tool_ = segs[segment_]["tool_id"].get<int>();
+    tool_cutting_s_ = 0;
     d_["tool_change_counter"] = d_["tool_change_counter"].get<int>() + 1;
     event("tool_change");
   }
@@ -149,6 +158,10 @@ void Engine::finish_segment() {
   }
   if (++segment_ >= int(segs.size())) {
     segment_ = 0;
+    d_["current_step_type"] = 0;
+    d_["current_block"] = 0;
+    d_["program_block"] = 0;
+    active_nc_ = Json();
     transition(30);
     return;
   }
@@ -159,6 +172,15 @@ void Engine::physics(double dt) {
   int step = d_["current_step_type"];
   bool running = state_ == 40, moving = running && (step == 2 || step == 3 || step == 4);
   bool cutstep = step == 3 || step == 4;
+  const Json *point = nullptr;
+  if (s.contains("motion_path")) {
+    if (!path_done_) point = &s["motion_path"][path_point_];
+    else moving = false;
+    cutstep = point && (*point)["mode"] != "RAPID";
+    if (point && running && (!active_nc_.is_object() || active_nc_["line"] != (*point)["line"])) active_nc_ = *point;
+  }
+  const auto &goal_xyz = point ? (*point)["xyz"] : s["target_xyz_mm"];
+  double command_feed = point ? double((*point)["feed_mm_min"]) : double(s["feed_mm_min"]);
   d_["controller_mode"] = state_ == 0 ? 0 : state_ == 20 ? 4 : 1;
   d_["door_closed"] = fault_ == 1401 ? 0 : 1;
   d_["estop_active"] = fault_ == 1402 ? 1 : 0;
@@ -169,8 +191,8 @@ void Engine::physics(double dt) {
   d_["spindle_actual_rpm"] = rpm;
   d_["spindle_target_rpm"] = target;
   d_["spindle_on"] = rpm > 50 ? 1 : 0;
-  double feed = moving ? double(s["feed_mm_min"]) * std::min(1., elapsed_ / 0.6) : 0.;
-  d_["feed_command_mm_min"] = moving ? double(s["feed_mm_min"]) : 0.;
+  double feed = moving ? command_feed * std::min(1., elapsed_ / 0.6) / (point ? cycle_scale_ : 1.) : 0.;
+  d_["feed_command_mm_min"] = moving ? command_feed : 0.;
   d_["feed_actual_mm_min"] = feed;
   bool cutting = running && cutstep && rpm > 300 && feed > 0 && int(d_["part_clamped"]) &&
                  int(d_["door_closed"]);
@@ -180,17 +202,21 @@ void Engine::physics(double dt) {
   const char *vel[] = {"axis_x_velocity_mm_s", "axis_y_velocity_mm_s", "axis_z_velocity_mm_s"};
   double distance = 0;
   for (int i = 0; i < 3; i++) {
-    double delta = double(s["target_xyz_mm"][i]) - double(d_[pos[i]]);
+    double delta = double(goal_xyz[i]) - double(d_[pos[i]]);
     distance += delta * delta;
   }
   distance = std::sqrt(distance);
   double remaining = std::max(dt, double(s["duration_s"]) * cycle_scale_ - elapsed_ + dt);
-  double travel = moving ? std::min({distance, feed / 60 * dt, distance * dt / remaining}) : 0.;
+  double travel = moving ? std::min({distance, feed / 60 * dt, point ? distance : distance * dt / remaining}) : 0.;
   for (int i = 0; i < 3; i++) {
-    double old = d_[pos[i]], goal = s["target_xyz_mm"][i];
+    double old = d_[pos[i]], goal = goal_xyz[i];
     double delta = distance > 1e-9 ? (goal - old) * travel / distance : 0.;
     d_[pos[i]] = old + delta;
     d_[vel[i]] = std::abs(delta) / dt;
+  }
+  if (point && moving && distance - travel < 1e-8) {
+    ++path_point_;
+    path_done_ = path_point_ == s["motion_path"].size();
   }
   feed = travel / dt * 60;
   d_["feed_actual_mm_min"] = feed;
@@ -242,6 +268,7 @@ void Engine::physics(double dt) {
   d_["energy_kwh"] = energy_;
   d_["data_quality_code"] = fault_ == 1702 ? 1 : 0;
   if (cutting && tool_) {
+    tool_cutting_s_ += dt;
     auto &t = tools_[tool_ - 1];
     double mat = program_ == 1 ? 1.35 : program_ == 3 ? 0.75 : 1.;
     double stress = clip(mat * (0.6 + 0.4 * load / 75) *
@@ -409,7 +436,7 @@ void Engine::tick(double dt, int64_t wall) {
       elapsed_ += dt;
       cycle_ += dt;
       auto &s = config_["programs"]["programs"][program_]["segments"][segment_];
-      if (elapsed_ >= double(s["duration_s"]) * cycle_scale_ &&
+      if (elapsed_ >= double(s["duration_s"]) * cycle_scale_ && path_done_ &&
           (step_code(s["step"]) != 6 || double(d_["spindle_actual_rpm"]) < 50))
         finish_segment();
     }
@@ -468,8 +495,25 @@ MachineSnapshot Engine::snapshot() {
          q = shift_total_ ? shift_good_ / shift_total_ : 1;
   s.metrics = {{"uptime_s", uptime_}, {"availability", a}, {"performance", p},
                {"quality", q},        {"oee", a * p * q},  {"profile", profile_}};
+  const auto &program = config_["programs"]["programs"][program_];
+  const auto &segment = program["segments"][segment_];
+  s.nc = {{"program_id", d_["program_id"]}, {"revision", program.value("revision", 1)},
+          {"segment", d_["program_block"]}, {"operation", segment.value("operation", "")},
+          {"line", active_nc_.is_object() ? active_nc_.value("line", 0) : 0},
+          {"code", active_nc_.is_object() ? active_nc_.value("code", "") : ""},
+          {"elapsed_s", elapsed_}, {"remaining_s", std::max(0., double(segment["duration_s"]) * cycle_scale_ - elapsed_)},
+          {"tool_cutting_s", tool_cutting_s_}, {"requested_tool", segment["tool_id"]},
+          {"executing", state_ == 40 || state_ == 60}, {"synthetic", true}};
   canonicalize(s);
   return s;
+}
+Json Engine::program_catalog() const {
+  Json result = Json::array();
+  for (const auto &p : config_["programs"]["programs"])
+    result.push_back({{"id",p["id"]},{"name",p["name"]},{"revision",p.value("revision",1)},
+      {"nominal_cycle_seconds",p["nominal_cycle_seconds"]},{"planned_tool_changes",p["planned_tool_changes"]},
+      {"gcode_lines",p["gcode_lines"]},{"synthetic",true},{"execution_model","operation segments; not a G-code interpreter"}});
+  return result;
 }
 Json Engine::take_events() {
   Json result = std::move(events_);
@@ -498,6 +542,8 @@ Json Engine::save() const {
           {"event_id", event_id_},
           {"program", program_},
           {"tool", tool_},
+          {"tool_cutting_s", tool_cutting_s_},
+          {"program_revision", config_["programs"]["programs"][program_].value("revision", 1)},
           {"energy", energy_},
           {"order_started", order_started_},
           {"profile", profile_},
@@ -517,6 +563,7 @@ void Engine::restore(const Json &s, int64_t now) {
   event_id_ = s.at("event_id");
   program_ = s.at("program");
   tool_ = s.at("tool");
+  tool_cutting_s_ = s.value("tool_cutting_s", 0.);
   energy_ = s.at("energy");
   order_started_ = s.at("order_started");
   profile_ = s.at("profile");
@@ -528,6 +575,13 @@ void Engine::restore(const Json &s, int64_t now) {
   shift_total_ = s.value("shift_total", 0.);
   now_ = now;
   state_ = int(d_["state_code"]);
+  const auto &program = config_["programs"]["programs"][program_];
+  if (s.value("program_revision", 1) != program.value("revision", 1))
+    event("program_revision_changed", 0, 1, {{"previous_revision", s.value("program_revision", 1)}, {"revision", program.value("revision", 1)}});
+  d_["nominal_cycle_s"] = program["nominal_cycle_seconds"];
+  d_["cycle_target_s"] = program["nominal_cycle_seconds"];
+  d_["program_label"] = program["name"];
+  d_["current_block"] = 0; d_["program_block"] = 0; d_["current_step_type"] = 0;
   event("restart_interruption", 0, 1);
   event("sample_gap", 0, 1);
   fault_ = 0;
@@ -569,6 +623,7 @@ void Engine::command(const std::string &action, const Json &b) {
     t["cutting_minutes"] = 0.;
     t["stress_ema"] = 1.;
     t["replacement_count"] = int(t["replacement_count"]) + 1;
+    if (slot == tool_) tool_cutting_s_ = 0;
     event("tool_replaced");
     sync_tools();
   } else if (action == "ack-alarm") {
