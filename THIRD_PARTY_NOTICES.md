@@ -8,7 +8,8 @@ The shipped runtime dynamically links the libraries below. This inventory and th
 | open62541 | v1.5.0, `b90fbfac5ef484089447bf5e3fe6ad7baaaebada` | MPL-2.0; selected examples CC0 |
 | libmosquitto | Debian package version in SBOM | EPL-2.0 / EDL-1.0 |
 | Mosquitto broker | 2.1.2, image digest `sha256:6f8d8a947c506f8a2290ec65cd4bd2bc7cb4d43fb5f6271f861cb013e2ef9797` | EPL-2.0 / EDL-1.0 |
-| SQLite | Debian package version in SBOM | Public domain |
+| PostgreSQL libpq | Debian libpq build/runtime package | PostgreSQL License |
+| TimescaleDB | Image digest pinned in compose.yaml | Apache-2.0 and Timescale License; see upstream image licenses |
 | yaml-cpp | Debian package version in SBOM | MIT |
 | nlohmann/json | Debian package version in SBOM | MIT |
 | OpenSSL | Debian package version in SBOM | Apache-2.0 |

@@ -11,7 +11,9 @@ def call(path,body=None,token=None):
   with urllib.request.urlopen(urllib.request.Request('http://127.0.0.1:18080'+path,data=data,headers=headers),timeout=4) as r:return r.status,json.load(r)
  except urllib.error.HTTPError as e:return e.code,e.read().decode()
 try:
- subprocess.run(['docker','run','-d','--name',name,'--user','10001:10001','--read-only','--cap-drop','ALL','-p','127.0.0.1:18080:8080','-v',tmp+':/data','-v',str(ROOT/'secrets/admin-token')+':/run/secrets/admin-token:ro','-v',str(ROOT/'secrets/mqtt-password')+':/run/secrets/mqtt-password:ro','-e','ENABLE_ADMIN=true','-e','ADMIN_TOKEN_FILE=/run/secrets/admin-token','-e','MQTT_PASSWORD_FILE=/run/secrets/mqtt-password','-e','ALLOW_INSECURE_OPCUA=true','cnc-simulator:1.0'],check=True,stdout=subprocess.DEVNULL)
+ subprocess.run(['docker','compose','exec','-T','timescaledb','psql','-v','ON_ERROR_STOP=1','-U','postgres','-d','cnc_test','-c','TRUNCATE telemetry,events,orders,runtime_state'],check=True,stdout=subprocess.DEVNULL)
+ subprocess.run(['docker','compose','run','-d','--no-deps','--name',name,'-p','127.0.0.1:18080:8080','-v',str(ROOT/'secrets/db-admin-password')+':/run/secrets/db-admin-password:ro','-e','DATABASE_URL=host=timescaledb dbname=cnc_test user=postgres','-e','DATABASE_PASSWORD_FILE=/run/secrets/db-admin-password','-e','MQTT_HOST=127.0.0.1','-e','ENABLE_ADMIN=true','cnc-simulator'],check=True,stdout=subprocess.DEVNULL)
+
  for i in range(60):
   try:
    if call('/health/live')[0]==200:break

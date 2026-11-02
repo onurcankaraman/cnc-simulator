@@ -1,0 +1,13 @@
+{
+  "duration_s": 60.22,
+  "initial_rss_mib": 24.465,
+  "final_rss_mib": 24.523,
+  "peak_rss_mib": 24.523,
+  "average_cpu_one_core_pct": 1.744,
+  "samples": 7,
+  "timescaledb_sum_rss_peak_mib": 122.363,
+  "full_stack_sum_rss_peak_mib": 146.887,
+  "rss_note": "PostgreSQL process RSS sum double-counts shared pages; not unique physical memory",
+  "24h_soak": "NOT RUN",
+  "memory_target_short_run": "PASS"
+}

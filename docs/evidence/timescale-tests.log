@@ -1,0 +1,40 @@
+contract: 158 fields; DB bounds/overlaps/NodeIds PASS
+ Container cnc-smulatoru-tests-run-e8c5f6b4f961 Creating 
+ Container cnc-smulatoru-tests-run-e8c5f6b4f961 Created 
+Internal ctest changing into directory: /app/build
+Test project /app/build
+    Start 1: deterministic
+1/2 Test #1: deterministic ....................   Passed   25.57 sec
+    Start 2: bounded_history
+2/2 Test #2: bounded_history ..................   Passed    6.24 sec
+
+100% tests passed, 0 tests failed out of 2
+
+Total Test time (real) =  31.82 sec
+ERROR:snap7.common:b'CPU : Item not available'
+{"result": "PASS", "fields": 158, "aligned_sequences": [266, 267, 268], "db_sizes": [256, 256, 256, 128], "s7_slots": [0, 1], "s7_write": "REJECTED", "ua_write": "REJECTED", "ua_subscription_notifications": 4, "ua_security": "Basic256Sha256/SignAndEncrypt", "source_timestamp": "2026-11-02T06:37:12.355000+00:00", "mqtt_schema": 1, "http_validation": "PASS", "utc": "2026-11-02T06:37:13Z"}
+{"result": "PASS", "timescaledb": "2.31.0", "hypertables": 2, "direct_SQL": "158 fields; reader SELECT only", "retention": "exact 24h boundary; counters/active order preserved; scheduled every minute"}
+ServiceFault (BadSecurityPolicyRejected, diagnostics: DiagnosticInfo(SymbolicId=None, NamespaceURI=None, Locale=None, LocalizedText=None, AdditionalInfo=None, InnerStatusCode=None, InnerDiagnosticInfo=None)) from server received  in response to CreateSessionRequest
+PASS default OPC None session rejected; anonymous MQTT rejected; observer MQTT publish not delivered
+ Container cnc-smulatoru-cnc-simulator-1 Stopping 
+ Container cnc-smulatoru-cnc-simulator-1 Stopped 
+ Container cnc-smulatoru-timescaledb-1 Waiting 
+ Container cnc-smulatoru-mqtt-broker-1 Waiting 
+ Container cnc-smulatoru-mqtt-broker-1 Healthy 
+ Container cnc-smulatoru-timescaledb-1 Healthy 
+ Container cnc-smulatoru-cnc-simulator-1 Starting 
+ Container cnc-smulatoru-cnc-simulator-1 Started 
+ Container cnc-smulatoru-mqtt-broker-1 Stopping 
+ Container cnc-smulatoru-mqtt-broker-1 Stopped 
+ Container cnc-smulatoru-mqtt-broker-1 Starting 
+ Container cnc-smulatoru-mqtt-broker-1 Started 
+ Container cnc-smulatoru-timescaledb-1 Stopping 
+ Container cnc-smulatoru-timescaledb-1 Stopped 
+ Container cnc-smulatoru-timescaledb-1 Starting 
+ Container cnc-smulatoru-timescaledb-1 Started 
+{"result": "PASS", "restart": "counters/tools/order/energy preserved; incomplete cycle not counted", "broker_outage": "engine/DB continued; MQTT reconnected", "outage_sequence_delta": 6, "utc": "2026-11-02T06:37:37Z"}
+{"result": "PASS", "database_outage": "engine continued; reconnected; sample_gap recorded"}
+{"result": "PASS", "database_write_failure": "SQL permission failure; engine continued; durable checkpoint stable; recovered after grant"}
+ Container cnc-admin-test Creating 
+ Container cnc-admin-test Created 
+PASS admin authentication, malformed JSON, enum validation, rate limit, E-stop interlock, acknowledgement and SQL audit

@@ -1,6 +1,6 @@
 #include "adapters/http_server.hpp"
 #include "adapters/protocols.hpp"
-#include "adapters/sqlite_store.hpp"
+#include "adapters/timescale_store.hpp"
 #include "core/engine.hpp"
 #include <csignal>
 #include <ctime>
@@ -58,7 +58,9 @@ int main() {
     auto config = load_config(env("CONFIG_DIR", "/app/config"));
     auto seed = config["plant"]["simulation"]["seed"];
     Engine engine(config, seed.is_null() ? std::random_device{}() : seed.get<uint64_t>());
-    Store store(env("DATABASE_PATH", "/data/cnc.sqlite"));
+    auto db_password = file(env("DATABASE_PASSWORD_FILE"));
+    while (!db_password.empty() && isspace(db_password.back())) db_password.pop_back();
+    Store store(env("DATABASE_URL", "host=timescaledb dbname=cnc user=cnc_writer"), db_password);
     auto saved = store.restore();
     if (!saved.is_null())
       engine.restore(saved, wall_ms());
@@ -181,33 +183,29 @@ int main() {
             throw std::runtime_error("event backlog exceeded");
           pending.push_back(e);
         }
-        if (now - publish >= std::chrono::seconds(1) || !pending.empty()) {
+        if (now - publish >= std::chrono::seconds(1) || (!pending.empty() && !had_gap)) {
           publish = now;
           snapshot = engine.snapshot();
           protocols.publish(snapshot, pending);
           bool take = now - sample >= std::chrono::milliseconds(
                                           int(config["plant"]["simulation"]["database_sample_ms"]));
-          if (had_gap) {
-            pending.push_back({{"event_id", -snapshot.ts_ms},
-                               {"ts_ms", snapshot.ts_ms},
-                               {"type", "sample_gap"},
-                               {"code", 0},
-                               {"severity", 2},
-                               {"state_from", 0},
-                               {"state_to", 0}});
-          }
           if (!store.write(snapshot, engine.save(), pending, engine.order(), take)) {
             persistence_failures++;
             if (!had_gap)
               std::cerr << Json({{"event", "database_failure"}, {"error", store.error()}}).dump()
                         << std::endl;
+            if (!had_gap && pending.size() >= 256)
+              throw std::runtime_error("event backlog exceeded");
+            if (!had_gap) pending.push_back({{"event_id", -snapshot.ts_ms},
+                {"ts_ms", snapshot.ts_ms}, {"type", "sample_gap"}, {"code", 0},
+                {"severity", 2}, {"state_from", 0}, {"state_to", 0}});
             had_gap = true;
           } else {
+            pending = Json::array();
             had_gap = false;
             if (take)
               sample = now;
           }
-          pending = Json::array();
         }
         if (now - clean >= std::chrono::seconds(60)) {
           store.cleanup(wall_ms());

@@ -4,7 +4,8 @@ Snap7 f6ff90317ca5d54250f4dcd29209689a74e26d82
 open62541 v1.5.0 b90fbfac5ef484089447bf5e3fe6ad7baaaebada
 Mosquitto broker 2.1.2 sha256:6f8d8a947c506f8a2290ec65cd4bd2bc7cb4d43fb5f6271f861cb013e2ef9797
 libmosquitto 2.0.11-1.2+deb12u2
-SQLite 3.40.1-2+deb12u2
+PostgreSQL libpq: installed version recorded in docs/evidence/timescale-packages.txt
+TimescaleDB 2.31.0 / PostgreSQL 17.11 image sha256:b56a3f51991df1f79d0c1a0841cad5c5fa8058fdd6a3ee6886394a6d4c174538
 yaml-cpp 0.7.0+dfsg-8+b1
 nlohmann-json 3.11.2-2
 OpenSSL 3.0.22-1~deb12u2

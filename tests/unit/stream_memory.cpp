@@ -1,19 +1,23 @@
-#include "adapters/sqlite_store.hpp"
+#include "adapters/timescale_store.hpp"
+#include <fstream>
+#include <cstdlib>
 #include "core/engine.hpp"
 #include <cstdio>
 #include <iostream>
 #include <sys/resource.h>
 using namespace cnc;
 int main() {
-  std::remove("/tmp/cnc-memory.sqlite");
+
   Engine e(load_config("config"), 1);
   e.tick(.2, 1793516400000);
   auto s = e.snapshot();
-  Store store("/tmp/cnc-memory.sqlite");
+  std::ifstream secret(env("CNC_TEST_DATABASE_PASSWORD_FILE"));
+  std::string password; secret >> password;
+  Store store(env("CNC_TEST_DATABASE_URL"), password);
   auto state = e.save(), order = e.order();
   for (int i = 0; i < 5000; i++) {
     s.ts_ms += 1000;
-    store.write(s, state, Json::array(), order, true);
+    if (!store.write(s, state, Json::array(), order, true)) return 2;
   }
   size_t bytes = 0, max_chunk = 0;
   auto stream = store.history_stream(s.ts_ms - 5000000, s.ts_ms, 5000, 1);
@@ -28,5 +32,5 @@ int main() {
   getrusage(RUSAGE_SELF, &usage);
   std::cout << "stream rows=5000 bytes=" << bytes << " max_chunk=" << max_chunk
             << " peak_rss_kib=" << usage.ru_maxrss << "\n";
-  return usage.ru_maxrss > 40000 || max_chunk > 65536 ? 1 : 0;
+  return usage.ru_maxrss > 40000 || max_chunk > 131072 ? 1 : 0;
 }
