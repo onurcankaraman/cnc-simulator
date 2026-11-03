@@ -1,3 +1,14 @@
+# In-image PiriVision SQL proxy — 2026-11-03
+
+`docker compose build cnc-simulator`: PASS (PgBouncer 1.18.0-1+deb12u1).
+`docker compose -f compose.yaml -f compose.sql-proxy.yaml -f logs/compose.proxy-test.yaml up -d --no-deps --wait cnc-simulator`: PASS. Local HTTP was mapped to 28080 because an unrelated Unity MCP server owns 8080. Existing services were not stopped.
+`SQL_PROXY_PASSWORD_FILE=secrets/db-demo-password .venv312/bin/python tests/integration/sql_proxy.py`: PASS, client TLS disabled, backend TLS enabled, 158 telemetry fields and revision-2 NC context read. Bad password, writer login, other database, writes and private state reads rejected. Proxy uses the production read-only database; no rows changed.
+Independent `tests/integration/connectors.py` executed with only HTTP port changed to 28080: PASS, sequences 40137–40139, all 158 fields, S7/UA writes rejected and encrypted UA subscriptions received.
+Local fault test: sent SIGTERM to PgBouncer inside the container; supervisor stopped simulator, Docker restart count increased from 0 to 1, health recovered and SQL proxy test passed again.
+Full CI and live deployment results are appended after completion. **24h soak = NOT RUN**.
+
+---
+
 # Longer tool runs and synthetic NC context — 2026-11-02
 
 Actual local commands: `docker compose build cnc-simulator`, additive migration with `docker compose exec -T timescaledb psql -v ON_ERROR_STOP=1 -U postgres -d cnc < timescaledb/migrations/002-nc-context.sql`, targeted `docker compose up -d --no-deps --wait cnc-simulator`, then `scripts/test-all.sh`. **PASS** ([full integration output](evidence/long-program-integration.log)). All three CTest cases passed in 90.60 seconds, including 1,000 completed accelerated cycles, deterministic replay, restart/fault/wear/production/energy invariants and bounded SQL history. A preliminary standalone CTest run used an old disposable database schema and failed SQL inserts; the standard test script recreated `cnc_test` with the new schema and all tests passed.
