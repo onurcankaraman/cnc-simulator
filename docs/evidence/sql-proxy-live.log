@@ -1,0 +1,5 @@
+{"result": "PASS", "counters_order_12_wear": "retained", "before_sequence": 117467, "after_sequence": 117474, "changed_containers": ["cnc-live-cnc-simulator-1"], "unchanged_containers": 49}
+{"result": "PASS", "client_tls": false, "backend_tls": true, "sequence": 117484, "fields": 158, "nc_revision": 2, "read_only": true, "private_state": "DENIED", "bad_password_writer_other_database": "DENIED"}
+ERROR:snap7.common:b'CPU : Item not available'
+{"result": "PASS", "fields": 158, "aligned_sequences": [117492, 117494, 117495], "db_sizes": [256, 256, 256, 128], "s7_slots": [0, 1], "s7_write": "REJECTED", "ua_write": "REJECTED", "ua_subscription_notifications": 5, "ua_security": "Basic256Sha256/SignAndEncrypt", "source_timestamp": "2026-11-03T06:58:59.240000+00:00", "mqtt_schema": 1, "http_validation": "PASS", "utc": "2026-11-03T06:59:02Z"}
+{"direct_5432_verify_full":"PASS","instantaneous_rss_mib":{"simulator_proxy_supervisor":36.4336,"broker":9.04297},"24h_soak":"NOT RUN"}

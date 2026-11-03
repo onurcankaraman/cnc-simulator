@@ -172,6 +172,7 @@ set `SQL_PROXY_BIND_IP` to the intended interface to allow remote clients.
 
 Create `secrets/sql-proxy-users` containing `"cnc_demo" "<existing demo password>"`.
 Keep it out of Git, owned by UID 10001, mode 0400 (host secrets directory 0700).
+Ensure public `config/pgbouncer.ini` is mode 0644 so the non-root process can read it.
 Only this reader is listed; writer/admin credentials must never be added.
 `config/pgbouncer.ini` verifies the upstream hostname and certificate using the
 image's system CA store. Adjust its backend host for another deployment.
