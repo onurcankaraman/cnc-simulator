@@ -162,3 +162,35 @@ FROM telemetry ORDER BY ts_ms DESC LIMIT 100;
 ```
 
 NC history shares the 24-hour telemetry retention. Pre-upgrade rows have `{}`. Apply `timescaledb/migrations/002-nc-context.sql` before upgrading an existing runtime.
+
+## PiriVision: no TLS or client certificate (optional in-image proxy)
+
+The simulator image bundles PgBouncer. No fourth container/image is required;
+existing TimescaleDB and MQTT services remain. Enable using `compose.sql-proxy.yaml`
+last in the Compose file list. By default port 6432 is bound to host loopback;
+set `SQL_PROXY_BIND_IP` to the intended interface to allow remote clients.
+
+Create `secrets/sql-proxy-users` containing `"cnc_demo" "<existing demo password>"`.
+Keep it out of Git, owned by UID 10001, mode 0400 (host secrets directory 0700).
+Only this reader is listed; writer/admin credentials must never be added.
+`config/pgbouncer.ini` verifies the upstream hostname and certificate using the
+image's system CA store. Adjust its backend host for another deployment.
+
+```sh
+docker compose -f compose.yaml -f compose.sql-proxy.yaml up -d --build --no-deps cnc-simulator
+```
+
+Production PiriVision connection: host `cnc.digitheta.dev`, port `6432`, database
+`cnc`, user `cnc_demo`, existing password, SSL disabled; no certificate upload.
+
+```text
+postgresql://cnc_demo:<PASSWORD>@cnc.digitheta.dev:6432/cnc?sslmode=disable
+```
+
+User-authorized plaintext access: client-to-proxy traffic is unencrypted.
+Proxy-to-PostgreSQL uses verified TLS; the existing public TLS endpoint on 5432
+is unchanged. No S7/admin ports are exposed. PgBouncer accepts legacy MD5 client
+authentication and uses SCRAM upstream. It limits backend connections to two;
+idle client sessions close after 300 seconds. The supervisor stops both children
+when either exits, so Docker restarts the container. Health checks include the
+proxy listener and simulator readiness. Passwords are mounted, never baked in.

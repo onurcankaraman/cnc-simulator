@@ -9,6 +9,7 @@ The shipped runtime dynamically links the libraries below. This inventory and th
 | libmosquitto | Debian package version in SBOM | EPL-2.0 / EDL-1.0 |
 | Mosquitto broker | 2.1.2, image digest `sha256:6f8d8a947c506f8a2290ec65cd4bd2bc7cb4d43fb5f6271f861cb013e2ef9797` | EPL-2.0 / EDL-1.0 |
 | PostgreSQL libpq | Debian libpq build/runtime package | PostgreSQL License |
+| PgBouncer | Debian 1.18.0-1+deb12u1; optional in-image SQL proxy | ISC |
 | TimescaleDB | Image digest pinned in compose.yaml | Apache-2.0 and Timescale License; see upstream image licenses |
 | yaml-cpp | Debian package version in SBOM | MIT |
 | nlohmann/json | Debian package version in SBOM | MIT |

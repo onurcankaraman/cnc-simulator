@@ -399,3 +399,12 @@ AI, verilen blueprint paketini **başlangıç sözleşmesi** olarak kullanarak r
 ## 16. SON TESLİM TANIMI
 
 Ürün tamamlandı ancak şu koşullarda denebilir: `docker compose up -d --build` sonrası S7/OPC UA/MQTT gerçekten harici istemcilerle okunur, bir makine durmadan kendi olaylarını üretir, takım aşınması zamana yayılır, 24h TimescaleDB geçmişi analiz edilir, UI makineyi gösterir, reboot'ta sayaçlar korunur, 24h soak ve RAM ölçümü raporludur. Her şey **test ve ölçüm kanıtıyla** sunulur. Bu dokümanın verilmesi uygulamanın veya testlerin yapılmış olduğu anlamına gelmez.
+
+### Authorized PiriVision compatibility extension (2026-11-03)
+
+An optional PgBouncer process is bundled in the CNC simulator image/container;
+no separate proxy image/service. It exposes read-only SQL on TCP/6432 without
+client TLS/certificates by explicit operator request. Existing TimescaleDB and
+broker services remain. Upstream uses verify-full TLS; direct PostgreSQL TLS
+and private S7/admin restrictions remain. Credentials are mounted files.
+Runtime memory measurements must include the proxy and its supervisor.

@@ -81,3 +81,13 @@ docker compose up -d --build cnc-simulator
 ```
 
 Keep your deployment's Compose overrides/project name on both commands. Persistent counters and tool wear survive the revision change; an interrupted part restarts. Older history has an empty `nc_json` object.
+
+## PiriVision without TLS
+
+Optional PgBouncer runs inside the **same simulator image and container**.
+Use `compose.sql-proxy.yaml` to enable it; no additional proxy service is needed.
+PiriVision connects to `cnc.digitheta.dev:6432/cnc` as `cnc_demo` with SSL disabled
+and no client certificate. Existing TLS port 5432 remains available.
+Client-to-proxy traffic is plaintext, as explicitly requested; the upstream
+connection uses verified TLS. Setup and secret permissions are documented in
+[the connection guide](docs/CONNECTION_GUIDE.md#pirivision-no-tls-or-client-certificate-optional-in-image-proxy).

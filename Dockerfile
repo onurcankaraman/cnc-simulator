@@ -11,7 +11,7 @@ FROM build AS test
 ENTRYPOINT ["ctest", "--test-dir", "build", "--output-on-failure"]
 
 FROM debian:bookworm-slim@sha256:abd67ffcfa541b485a3dff59865ab629aa048a6c613e639d36e7456b0b229241 AS runtime
-RUN apt-get update && apt-get install -y --no-install-recommends libpq5 libmosquitto1=2.0.11-1.2+deb12u2 libyaml-cpp0.7=0.7.0+dfsg-8+b1 libssl3=3.0.22-1~deb12u2 curl ca-certificates && rm -rf /var/lib/apt/lists/* && useradd -u 10001 -m cnc && mkdir /data && chown cnc /data
+RUN apt-get update && apt-get install -y --no-install-recommends libpq5 libmosquitto1=2.0.11-1.2+deb12u2 libyaml-cpp0.7=0.7.0+dfsg-8+b1 libssl3=3.0.22-1~deb12u2 curl ca-certificates pgbouncer=1.18.0-1+deb12u1 postgresql-client-15 && rm -rf /var/lib/apt/lists/* && useradd -u 10001 -m cnc && mkdir /data && chown cnc /data
 COPY --from=build /usr/local/lib/libsnap7.so /usr/local/lib/
 COPY --from=build /usr/local/lib/libopen62541.so* /usr/local/lib/
 RUN ldconfig
@@ -19,6 +19,7 @@ WORKDIR /app
 COPY --from=build /app/build/cnc-simulator /app/cnc-simulator
 COPY config ./config
 COPY src/ui ./ui
+COPY scripts/container-entrypoint.sh scripts/container-healthcheck.sh /app/
 RUN chmod -R a+rX /app/config /app/ui
 USER cnc
-ENTRYPOINT ["/app/cnc-simulator"]
+ENTRYPOINT ["/bin/bash", "/app/container-entrypoint.sh"]
